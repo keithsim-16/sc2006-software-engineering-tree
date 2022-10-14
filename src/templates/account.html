@@ -1,0 +1,305 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="h3 mb-2 text-gray-800">Account Overview</h1>
+<!-- Top Row -->
+<div class="row">
+
+  <div class="col-lg-6">
+    <!-- Balance Sheet Column -->
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Balance Sheet</h6>
+      </div>
+      <div class="card-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Account Type</th>
+              <th>Account Name</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tfoot>
+            <tr>
+              <th>Net Worth</th>
+              <th></th>
+              <th>$3,100</th>
+            </tr>
+          </tfoot>
+          <tr>
+            <td>Bank</td>
+            <td>OCBC</td>
+            <td>$10,000</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>Cash</td>
+            <td>$100</td>
+          </tr>
+          <tr>
+            <td>Liabilities</td>
+            <td>Student Loan</td>
+            <td>$7,000</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <!-- Budget Goal Progress Bar -->
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Monthly Budget Goal</h6>
+      </div>
+      <div class="card-body">
+        <h4 class="small font-weight-bold">Goal: $500 <span class="float-right">20%</span></h4>
+        <div class="progress mb-4">
+          <div class="progress-bar bg-danger" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0"
+            aria-valuemax="100"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Current Month Income -->
+    <div class="card border-left-primary shadow mb-4 py-2">
+      <!-- replace border-left-primary with border-left-danger(red) border-left-success(green) -->
+      <div class="card-body">
+        <div class="row no-gutters align-items-center">
+          <div class="col mr-2">
+            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+              <!-- replace text-primary with text-danger(red) text-success(green) -->
+              This Month (October 2022)
+            </div>
+            <div class="h5 mb-0 font-weight-bold text-gray-800">$1335.00</div>
+          </div>
+          <div class="col-auto">
+            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="card shadow mb-4">
+          <div class="card-body text-center">
+            <button class="btn btn-primary btn-block" type="button" data-toggle="modal"
+              data-target="#exampleModalLg">Add New Financial Account</button>
+            <div class="modal fade" id="exampleModalLg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+              aria-hidden="true">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Add New Financial Account</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <form class="user">
+                      <div class="form-group">
+                        <select class="form-control form-control-lg">
+                          <option value="" disabled selected>Account Type</option>
+                          <option></option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <input type="text" class="form-control form-control-lg" id="acctName"
+                          placeholder="Account Name">
+                      </div>
+                      <div class="form-group">
+                        <input type="text" class="form-control form-control-lg" id="acctValue"
+                          placeholder="Account Value">
+                      </div>
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button class="btn btn-primary" type="button" data-dismiss="modal">Add New Account</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card shadow mb-4">
+          <div class="card-body text-center">
+            <button class="btn btn-primary btn-block" type="button" data-toggle="modal"
+              data-target="#transactionModal">Add New Transaction</button>
+            <div class="modal fade" id="transactionModal" tabindex="-1" role="dialog"
+              aria-labelledby="myLargeModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Add New Transaction</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <form class="user">
+                      <div class="form-group">
+                        <select class="form-control form-control-lg">
+                          <option value="" disabled selected>Transaction Type</option>
+                          <option></option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <input type="date" class="form-control form-control-lg" id="transactionDate"
+                          aria-describedby="emailHelp" placeholder="Date">
+                      </div>
+                      <div class="form-group">
+                        <select class="form-control form-control-lg">
+                          <option value="" disabled selected>Category</option>
+                          <option></option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <input type="text" class="form-control form-control-lg" id="transactionName"
+                          placeholder="Transaction Name">
+                      </div>
+                      <div class="form-group">
+                        <input type="text" class="form-control form-control-lg" id="transactionAmt"
+                          placeholder="Transaction Amount">
+                      </div>
+                      <div class="form-group">
+                        <input type="text" class="form-control form-control-lg" id="transactionRemarks"
+                          placeholder="Remarks">
+                      </div>
+                    </form>
+                  </div>
+                  <div class="modal-footer"><button class="btn btn-primary" type="button"
+                      data-dismiss="modal">Add New Transaction</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card shadow mb-4">
+          <div class="card-body text-center">
+            <a href="/transactions">
+              <button class="btn btn-primary btn-block" type="button" data-target="#exampleModalLg">View All
+                Transactions</button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+    <!-- transaction history -->
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Transaction History</h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Transaction Name</th>
+                <th>Remarks</th>
+                <th>Category</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+                <th>Date</th>
+                <th>Transaction Name</th>
+                <th>Remarks</th>
+                <th>Category</th>
+                <th>Amount</th>
+              </tr>
+            </tfoot>
+            <tbody>
+              <tr>
+                <td>Tiger Nixon</td>
+                <td>System Architect</td>
+                <td>Edinburgh</td>
+                <td>61</td>
+                <td>2011/04/25</td>
+              </tr>
+              <tr>
+                <td>Garrett Winters</td>
+                <td>Accountant</td>
+                <td>Tokyo</td>
+                <td>63</td>
+                <td>2011/07/25</td>
+              </tr>
+              <tr>
+                <td>Ashton Cox</td>
+                <td>Junior Technical Author</td>
+                <td>San Francisco</td>
+                <td>66</td>
+                <td>2009/01/12</td>
+              </tr>
+              <tr>
+                <td>Cedric Kelly</td>
+                <td>Senior Javascript Developer</td>
+                <td>Edinburgh</td>
+                <td>22</td>
+                <td>2012/03/29</td>
+              </tr>
+              <tr>
+                <td>Airi Satou</td>
+                <td>Accountant</td>
+                <td>Tokyo</td>
+                <td>33</td>
+                <td>2008/11/28</td>
+              </tr>
+              <tr>
+                <td>Brielle Williamson</td>
+                <td>Integration Specialist</td>
+                <td>New York</td>
+                <td>61</td>
+                <td>2012/12/02</td>
+              </tr>
+              <tr>
+                <td>Herrod Chandler</td>
+                <td>Sales Assistant</td>
+                <td>San Francisco</td>
+                <td>59</td>
+                <td>2012/08/06</td>
+              </tr>
+              <tr>
+                <td>Rhona Davidson</td>
+                <td>Integration Specialist</td>
+                <td>Tokyo</td>
+                <td>55</td>
+                <td>2010/10/14</td>
+              </tr>
+              <tr>
+                <td>Rhona Davidson</td>
+                <td>Integration Specialist</td>
+                <td>Tokyo</td>
+                <td>55</td>
+                <td>2010/10/14</td>
+              </tr>
+              <tr>
+                <td>Rhona Davidson</td>
+                <td>Integration Specialist</td>
+                <td>Tokyo</td>
+                <td>55</td>
+                <td>2010/10/14</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

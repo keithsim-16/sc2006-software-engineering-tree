@@ -15,9 +15,31 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from dashboard.views import home_view
+from dashboard.views import *
 
 urlpatterns = [
+    # Django Admin Page
     path("admin/", admin.site.urls),
-    path("home/", home_view, name="home")
+
+    # Logged In Views
+    path("", home_view, name="home"),
+    path("home/", home_view, name="home"),
+    path("account/", account_view, name="account"),
+    path("transactions/", transactions_view, name="transactions"),
+    path("set-up/", setup_view, name="set-up"),
+    path("budget-set-up/", budget_setup_view, name="budget-set-up"),
+
+    # Account Verification / Creation Views
+    path("registerYourAccount/", Register, name="Reg"), #register acct page
+    path('login/', Login, name="Login-page"),
+    path("logout/", Logout, name="logout"),
+    path("forgot-password/", forget_password, name="forgetPW"), #forget passwd page
+    path('verifyingCode/<str:email>/', password_verification_code, name="enterCode"), #for forget passwd
+    path('resetPassword/<str:email>',reset_page,name="resetPass"), #change passwd after ^^
+    path('verifying/<str:email>/',input_verification_code,name="Verifying"), #for reg acct
+
+    # Logic Views
+    path('enteringCode/<str:email>/',verification_code,name="Entering"), 
+    path('resetEmail/<str:email>/',Password_verification_code,name="resetEmail"),
 ]
+
