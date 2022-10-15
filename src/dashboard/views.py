@@ -1,12 +1,12 @@
 # Import Libraries
 from django.shortcuts import render, redirect
-from .models import generated_code
+from .models import generated_code, particular_detail
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
 
 
 # Logged in Views
@@ -106,8 +106,12 @@ def Login(request):
       return redirect('home')
     else:
       if User_data:
-        messages.error(request, "Wrong Password Entered.")
-        return redirect('Login-page')
+        get_user = User.objects.get(username=username)
+        if get_user.is_active == False:
+          return redirect('Entering', get_user.email)
+        else:
+          messages.error(request, "Wrong Password Entered.")
+          return redirect('Login-page')
       else:
         messages.error(request, "User does not exist.")
         return redirect('Login-page')
@@ -134,16 +138,16 @@ def forget_password(request):
 
 def password_verification_code(request, email):
   if request.method == 'POST':
-    verification = request.POST.get('Verification')
+    get_user = User.objects.get(email=email)    
+    verification = request.POST.get('Verification') 
+    check = check_password(verification,get_user.password)
 
-    check = generated_code.objects.filter(code=verification)
     if check:
-        get_code = generated_code.objects.get(code=verification)
-        get_code.delete()
-        return redirect('resetPass', email=email)
+      messages.success(request,"Please reset your password.") 
+      return redirect('resetPass',email=email)
     else:
-        messages.error(request, "The verification code is wrongly entered.")
-        return redirect('enterCode', email=email)
+      messages.error(request, "The verification code is wrongly entered.")
+      return redirect('enterCode', email=email)
 
   return render(request, "inputVerificationCode.html")
 
@@ -178,17 +182,21 @@ def input_verification_code(request, email):
 
     verification = request.POST.get('Verification')
 
-    check = generated_code.objects.filter(code=verification)
+    check = check_password(verification,get_user.username)
     if check:
-        get_user.is_active = True
-        get_user.save()  # saving the state
-        messages.success(request, "Account activated, proceed to login.")
-        get_code = generated_code.objects.get(code=verification)
-        get_code.delete()
-        return redirect('Login-page')
+      get_user.is_active = True 
+      get_user.save() #saving the state 
+      messages.success(request,"Account activated, proceed to login.") 
+      # get_code = generated_code.objects.get(code=verification) 
+      # get_code.delete() 
+      D = particular_detail.objects.get(Email=email) 
+      get_user.username = D.Username 
+      get_user.save() 
+      particular_detail.objects.get(Email=email).delete() 
+      return redirect('Login-page')
     else:
-        messages.error(request, "The verification code is wrongly entered.")
-        return redirect('Verifying', email=email)
+      messages.error(request, "The verification code is wrongly entered.")
+      return redirect('Verifying', email=email)
 
   return render(request, "inputVerificationCode.html")
 
@@ -209,9 +217,10 @@ def Password_verification_code(request, email):
     random_number += random.choice(a)
 
   # generate a new instance to store the random number
-  new_generated_code = generated_code(code=random_number)
+  encryptedpassword = make_password(random_number) 
+  get_user.password = encryptedpassword 
+  get_user.save() #save the code into the database with .save()
 
-  new_generated_code.save()  # save the code into the database with .save()
   print(random_number)
   Email_message = EmailMessage('Reset Password', f'Hi {get_user.get_full_name()}! \n Your verification code is: {random_number}. \n\n Enter this code in our website to activate your account.\n\n In case you have forgotten your username, your username is {get_user.get_username()} If you have any questions, send us an email.\n\n We’re glad you’re here!\n The Tree',
                                settings.EMAIL_HOST_USER,
@@ -236,9 +245,11 @@ def verification_code(request, email):
     random_number += random.choice(a)
 
   # generate a new instance to store the random number
-  new_generated_code = generated_code(code=random_number)
-
-  new_generated_code.save()  # save the code into the database with .save()
+  detail = particular_detail(Email=email,Username=get_user.username) 
+  detail.save() 
+  encryptedpassword=make_password(random_number) 
+  get_user.username= encryptedpassword 
+  get_user.save() #save the code into the database with .save()
 
   print(random_number)
 
