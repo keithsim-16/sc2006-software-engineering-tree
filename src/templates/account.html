@@ -140,39 +140,39 @@
                     </button>
                   </div>
                   <div class="modal-body">
-                    <form class="user">
+                    <form action="" method='POST'>
+                      {% csrf_token %}
                       <div class="form-group">
-                        <select class="form-control form-control-lg">
+                        <select class="form-control form-control-lg" name="transactionType" required>
                           <option value="" disabled selected>Transaction Type</option>
-                          <option></option>
+                          <option>Expense</option>
                         </select>
                       </div>
                       <div class="form-group">
                         <input type="date" class="form-control form-control-lg" id="transactionDate"
-                          aria-describedby="emailHelp" placeholder="Date">
+                          name="transactionDate" aria-describedby="emailHelp" placeholder="Date" required>
                       </div>
                       <div class="form-group">
-                        <select class="form-control form-control-lg">
+                        <select class="form-control form-control-lg" name="transactionCategory" required>
                           <option value="" disabled selected>Category</option>
-                          <option></option>
+                          <option>Food</option>
                         </select>
                       </div>
                       <div class="form-group">
                         <input type="text" class="form-control form-control-lg" id="transactionName"
-                          placeholder="Transaction Name">
+                          name="transactionName" placeholder="Transaction Name" required>
                       </div>
                       <div class="form-group">
                         <input type="text" class="form-control form-control-lg" id="transactionAmt"
-                          placeholder="Transaction Amount">
+                          name="transactionAmt" placeholder="Transaction Amount" required>
                       </div>
                       <div class="form-group">
                         <input type="text" class="form-control form-control-lg" id="transactionRemarks"
-                          placeholder="Remarks">
+                          name="transactionRemarks" placeholder="Remarks" required>
                       </div>
+                      <button class="btn btn-primary" type="submit">Add New Transaction</button>
                     </form>
                   </div>
-                  <div class="modal-footer"><button class="btn btn-primary" type="button"
-                      data-dismiss="modal">Add New Transaction</button></div>
                 </div>
               </div>
             </div>
@@ -200,11 +200,12 @@
     <!-- transaction history -->
     <div class="card shadow mb-4">
       <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Transaction History</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Recent Transaction History</h6>
       </div>
       <div class="card-body">
         <div class="table-responsive">
-          <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+          {% if object_list %}
+          <table class="table table-bordered" id="table1" width="100%" cellspacing="0">
             <thead>
               <tr>
                 <th>Date</th>
@@ -214,88 +215,21 @@
                 <th>Amount</th>
               </tr>
             </thead>
-            <tfoot>
-              <tr>
-                <th>Date</th>
-                <th>Transaction Name</th>
-                <th>Remarks</th>
-                <th>Category</th>
-                <th>Amount</th>
-              </tr>
-            </tfoot>
             <tbody>
-              <tr>
-                <td>Tiger Nixon</td>
-                <td>System Architect</td>
-                <td>Edinburgh</td>
-                <td>61</td>
-                <td>2011/04/25</td>
-              </tr>
-              <tr>
-                <td>Garrett Winters</td>
-                <td>Accountant</td>
-                <td>Tokyo</td>
-                <td>63</td>
-                <td>2011/07/25</td>
-              </tr>
-              <tr>
-                <td>Ashton Cox</td>
-                <td>Junior Technical Author</td>
-                <td>San Francisco</td>
-                <td>66</td>
-                <td>2009/01/12</td>
-              </tr>
-              <tr>
-                <td>Cedric Kelly</td>
-                <td>Senior Javascript Developer</td>
-                <td>Edinburgh</td>
-                <td>22</td>
-                <td>2012/03/29</td>
-              </tr>
-              <tr>
-                <td>Airi Satou</td>
-                <td>Accountant</td>
-                <td>Tokyo</td>
-                <td>33</td>
-                <td>2008/11/28</td>
-              </tr>
-              <tr>
-                <td>Brielle Williamson</td>
-                <td>Integration Specialist</td>
-                <td>New York</td>
-                <td>61</td>
-                <td>2012/12/02</td>
-              </tr>
-              <tr>
-                <td>Herrod Chandler</td>
-                <td>Sales Assistant</td>
-                <td>San Francisco</td>
-                <td>59</td>
-                <td>2012/08/06</td>
-              </tr>
-              <tr>
-                <td>Rhona Davidson</td>
-                <td>Integration Specialist</td>
-                <td>Tokyo</td>
-                <td>55</td>
-                <td>2010/10/14</td>
-              </tr>
-              <tr>
-                <td>Rhona Davidson</td>
-                <td>Integration Specialist</td>
-                <td>Tokyo</td>
-                <td>55</td>
-                <td>2010/10/14</td>
-              </tr>
-              <tr>
-                <td>Rhona Davidson</td>
-                <td>Integration Specialist</td>
-                <td>Tokyo</td>
-                <td>55</td>
-                <td>2010/10/14</td>
-              </tr>
+              {% for instance in object_list|slice:":10" %}
+                <tr>
+                    <td>{{ instance.date }} </td>
+                    <td><a href='{{ instance.get_absolute_url }}'> {{ instance.transaction_name }} </a></td>
+                    <td>{{ instance.remarks }} </td>
+                    <td>{{ instance.category }} </td>
+                    <td>{{ instance.amount }} </td>
+                </tr>
+              {% endfor %}
             </tbody>
           </table>
+          {% else %}
+            <h1>No Transactions Recorded</h1>
+          {% endif %}
         </div>
       </div>
     </div>

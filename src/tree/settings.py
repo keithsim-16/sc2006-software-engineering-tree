@@ -152,3 +152,5 @@ PASSWORD_HASHERS = [
   'django.contrib.auth.hashers.UnsaltedMD5PasswordHasher',
   'django.contrib.auth.hashers.CryptPasswordHasher',
 ]
+
+AUTH_USER_MODEL = 'dashboard.User'

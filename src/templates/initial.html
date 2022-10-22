@@ -231,7 +231,7 @@
             <li class="nav-item dropdown no-arrow">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
-                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Login</span>
+                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Logged in as: {{user.username}}</span>
                 <i class='fa fa-user'></i>
                 <!--<img class="img-profile rounded-circle"
                                     src="img/undraw_profile.svg">-->
@@ -359,10 +359,13 @@
             <div class="col-lg-2">
               <div class="card shadow mb-4">
                 <div class="card-body text-center">
-                  <a href="/home">
-                    <button class="btn btn-primary btn-block" type="button"
-                      data-target="#exampleModalLg">Complete</button>
-                  </a>
+                  <!--<a href="/home">-->
+                    <form action="" method='POST'> 
+                      {% csrf_token %}
+                      <button class="btn btn-primary btn-block" type="submit"
+                        data-target="#exampleModalLg" name="init_complete">Complete</button>
+                    </form>
+                 <!-- </a>-->
                 </div>
               </div>
             </div>
@@ -409,7 +412,7 @@
         <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
         <div class="modal-footer">
           <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-          <a class="btn btn-primary" href="login.html">Logout</a>
+          <a class="btn btn-primary" href="{% url 'logout' %}">Logout</a>
         </div>
       </div>
     </div>

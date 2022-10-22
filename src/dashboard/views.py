@@ -1,9 +1,8 @@
 # Import Libraries
 from django.shortcuts import render, redirect
-from .models import generated_code, particular_detail
 from django.core.mail import EmailMessage
 from django.conf import settings
-from django.contrib.auth.models import User
+from .models import User, Transaction
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
@@ -14,27 +13,101 @@ from django.contrib.auth.hashers import make_password, check_password
 
 def home_view(request, *args, **kwargs):
   if request.user.is_authenticated:
+    get_user = User.objects.get(username=request.user)
+    if get_user.init:
+      return redirect('set-up')
     return render(request, "home.html", {})
   else:
     return redirect('Login-page')
 
 
 def account_view(request, *args, **kwargs):
+  # Check if user is logged in
   if request.user.is_authenticated:
-    return render(request, "account.html", {})
+
+    # Check if user has completed initial set-up
+    get_user = User.objects.get(username=request.user)
+    if get_user.init:
+      return redirect('set-up')
+
+    # Add new transaction
+    if request.method == "POST":
+      username = request.user
+      transactionType = request.POST.get("transactionType")
+      transactionDate = request.POST.get("transactionDate")
+      transactionCategory = request.POST.get("transactionCategory")
+      transactionName = request.POST.get("transactionName")
+      transactionAmt = request.POST.get("transactionAmt")
+      transactionRemarks = request.POST.get("transactionRemarks")
+
+      print(transactionDate)
+
+      new_transaction = Transaction.objects.create(username=username, transaction_type=transactionType, date=transactionDate, transaction_name=transactionName,remarks=transactionRemarks,category=transactionCategory,amount=transactionAmt)
+      new_transaction.save()
+
+      return redirect('account')
+    
+    queryset = Transaction.objects.filter(username=request.user).order_by('-date')
+
+    context = {
+      "object_list": queryset
+    }
+
+    return render(request, "account.html", context)
+  # If not, back to login page
   else:
     return redirect('Login-page')
 
 
 def transactions_view(request, *args, **kwargs):
+  # Check if user is logged in
   if request.user.is_authenticated:
-    return render(request, "transactions.html", {})
+
+    # Check if user has completed initial set-up
+    get_user = User.objects.get(username=request.user)
+    if get_user.init:
+      return redirect('set-up')
+
+    queryset = Transaction.objects.filter(username=request.user).order_by('-date')
+    
+    context = {
+      "object_list": queryset
+    }
+
+    return render(request, "transactions.html", context)
+  # If not, back to login page
+  else:
+    return redirect('Login-page')
+
+
+def transaction_lookup_view(request, id):
+  # Check if user is logged in
+  if request.user.is_authenticated:
+
+    # Check if user has completed initial set-up
+    get_user = User.objects.get(username=request.user)
+    if get_user.init:
+      return redirect('set-up')
+
+    queryset = Transaction.objects.filter(username=request.user).get(id=id)
+    
+    context = {
+      "object_list": queryset
+    }
+
+    return render(request, "detailedTransaction.html", context)
+  # If not, back to login page
   else:
     return redirect('Login-page')
 
 
 def setup_view(request, *args, **kwargs):
   if request.user.is_authenticated:
+    if request.method == "POST":
+      get_user = User.objects.get(username=request.user)
+      get_user.init = False
+      get_user.save()
+      return redirect('home')
     return render(request, "initial.html", {})
   else:
     return redirect('Login-page')
@@ -42,6 +115,9 @@ def setup_view(request, *args, **kwargs):
 
 def budget_setup_view(request, *args, **kwargs):
   if request.user.is_authenticated:
+    get_user = User.objects.get(username=request.user)
+    if get_user.init:
+      return redirect('set-up')
     return render(request, "initialBudget.html", {})
   else:
     return redirect('Login-page')
@@ -103,7 +179,11 @@ def Login(request):
 
     if user is not None:
       login(request, user)
-      return redirect('home')
+      get_user = User.objects.get(username=username)
+      if get_user.init:
+        return redirect('set-up')
+      else:
+        return redirect('home')
     else:
       if User_data:
         get_user = User.objects.get(username=username)
@@ -140,7 +220,7 @@ def password_verification_code(request, email):
   if request.method == 'POST':
     get_user = User.objects.get(email=email)    
     verification = request.POST.get('Verification') 
-    check = check_password(verification,get_user.password)
+    check = check_password(verification,get_user.temp)
 
     if check:
       messages.success(request,"Please reset your password.") 
@@ -167,7 +247,6 @@ def reset_page(request, email):
     get_user = User.objects.get(email=email)
     encryptedpassword = make_password(Password1)
     get_user.password = encryptedpassword
-    get_user.is_active = True
     get_user.save()
 
     messages.success(request, "Password has been reset.")
@@ -182,17 +261,12 @@ def input_verification_code(request, email):
 
     verification = request.POST.get('Verification')
 
-    check = check_password(verification,get_user.username)
+    check = check_password(verification, get_user.temp)
+
     if check:
       get_user.is_active = True 
       get_user.save() #saving the state 
       messages.success(request,"Account activated, proceed to login.") 
-      # get_code = generated_code.objects.get(code=verification) 
-      # get_code.delete() 
-      D = particular_detail.objects.get(Email=email) 
-      get_user.username = D.Username 
-      get_user.save() 
-      particular_detail.objects.get(Email=email).delete() 
       return redirect('Login-page')
     else:
       messages.error(request, "The verification code is wrongly entered.")
@@ -206,8 +280,8 @@ def input_verification_code(request, email):
 
 def Password_verification_code(request, email):
   get_user = User.objects.get(email=email)
-  get_user.is_active = False
-  get_user.save()
+  # get_user.is_active = False
+  # get_user.save()
 
   import random
   random_number = ''
@@ -218,7 +292,7 @@ def Password_verification_code(request, email):
 
   # generate a new instance to store the random number
   encryptedpassword = make_password(random_number) 
-  get_user.password = encryptedpassword 
+  get_user.temp = encryptedpassword 
   get_user.save() #save the code into the database with .save()
 
   print(random_number)
@@ -245,10 +319,8 @@ def verification_code(request, email):
     random_number += random.choice(a)
 
   # generate a new instance to store the random number
-  detail = particular_detail(Email=email,Username=get_user.username) 
-  detail.save() 
-  encryptedpassword=make_password(random_number) 
-  get_user.username= encryptedpassword 
+  encryptedpassword = make_password(random_number) 
+  get_user.temp = encryptedpassword 
   get_user.save() #save the code into the database with .save()
 
   print(random_number)

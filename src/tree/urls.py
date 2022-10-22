@@ -26,6 +26,7 @@ urlpatterns = [
     path("home/", home_view, name="home"),
     path("account/", account_view, name="account"),
     path("transactions/", transactions_view, name="transactions"),
+    path("transactions/<int:id>/", transaction_lookup_view, name="detailed_transaction"),
     path("set-up/", setup_view, name="set-up"),
     path("budget-set-up/", budget_setup_view, name="budget-set-up"),
 
