@@ -7,6 +7,7 @@ class User(AbstractUser):
 	temp = models.CharField(max_length=225)
 	init = models.BooleanField(default=True)
 	budget_init = models.BooleanField(default=True)
+	net_worth = models.DecimalField(max_digits=20,decimal_places=2,default=0)
 
 class Transaction(models.Model):
 	username = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -19,3 +20,9 @@ class Transaction(models.Model):
 
 	def get_absolute_url(self):
 		return f"/transactions/{self.id}/"
+
+class FinancialAccount(models.Model):
+	username = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+	type = models.CharField(max_length=225)
+	name = models.TextField()
+	value = models.DecimalField(max_digits=20,decimal_places=2)

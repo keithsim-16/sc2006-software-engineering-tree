@@ -2,7 +2,7 @@
 from django.shortcuts import render, redirect
 from django.core.mail import EmailMessage
 from django.conf import settings
-from .models import User, Transaction
+from .models import User, Transaction, FinancialAccount
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
@@ -32,25 +32,49 @@ def account_view(request, *args, **kwargs):
 
     # Add new transaction
     if request.method == "POST":
-      username = request.user
-      transactionType = request.POST.get("transactionType")
-      transactionDate = request.POST.get("transactionDate")
-      transactionCategory = request.POST.get("transactionCategory")
-      transactionName = request.POST.get("transactionName")
-      transactionAmt = request.POST.get("transactionAmt")
-      transactionRemarks = request.POST.get("transactionRemarks")
+      if request.POST.get("addNewTrans"):
+        username = request.user
+        transactionType = request.POST.get("transactionType")
+        transactionDate = request.POST.get("transactionDate")
+        transactionCategory = request.POST.get("transactionCategory")
+        transactionName = request.POST.get("transactionName")
+        transactionAmt = request.POST.get("transactionAmt")
+        transactionRemarks = request.POST.get("transactionRemarks")
 
-      print(transactionDate)
+        new_transaction = Transaction.objects.create(username=username, transaction_type=transactionType, date=transactionDate, transaction_name=transactionName,remarks=transactionRemarks,category=transactionCategory,amount=transactionAmt)
+        new_transaction.save()
 
-      new_transaction = Transaction.objects.create(username=username, transaction_type=transactionType, date=transactionDate, transaction_name=transactionName,remarks=transactionRemarks,category=transactionCategory,amount=transactionAmt)
-      new_transaction.save()
+        return redirect('account')
 
-      return redirect('account')
+      elif request.POST.get("addNewAcct"):
+        username = request.user
+        acctType = request.POST.get("acctType")
+        acctName = request.POST.get("acctName")
+        acctValue = request.POST.get("acctValue")
+
+        new_fa = FinancialAccount.objects.create(username=username, type=acctType, name=acctName, value=acctValue)
+        new_fa.save()
+
+        get_user = User.objects.get(username=request.user)
+        if acctType == "Assets":
+          get_user.net_worth = float(get_user.net_worth) + float(acctValue)
+        else:
+          get_user.net_worth = float(get_user.net_worth) - float(acctValue)
+        get_user.save()
+
+        return redirect('account')
     
     queryset = Transaction.objects.filter(username=request.user).order_by('-date')
 
+    faset = FinancialAccount.objects.filter(username=request.user)
+    networth = User.objects.get(username=request.user).net_worth
+    if (networth < 0):
+      networth = "(" + str(networth * -1) + ")"
+
     context = {
-      "object_list": queryset
+      "object_list": queryset,
+      "fa_list": faset,
+      "networth": networth
     }
 
     return render(request, "account.html", context)
@@ -104,11 +128,41 @@ def transaction_lookup_view(request, id):
 def setup_view(request, *args, **kwargs):
   if request.user.is_authenticated:
     if request.method == "POST":
-      get_user = User.objects.get(username=request.user)
-      get_user.init = False
-      get_user.save()
-      return redirect('home')
-    return render(request, "initial.html", {})
+      if request.POST.get("completeInit"):
+        get_user = User.objects.get(username=request.user)
+        get_user.init = False
+        get_user.save()
+        return redirect('home')
+
+      elif request.POST.get("addNewAcct"):
+        username = request.user
+        acctType = request.POST.get("acctType")
+        acctName = request.POST.get("acctName")
+        acctValue = request.POST.get("acctValue")
+
+        new_fa = FinancialAccount.objects.create(username=username, type=acctType, name=acctName, value=acctValue)
+        new_fa.save()
+
+        get_user = User.objects.get(username=request.user)
+        if acctType == "Assets":
+          get_user.net_worth = float(get_user.net_worth) + float(acctValue)
+        else:
+          get_user.net_worth = float(get_user.net_worth) - float(acctValue)
+        get_user.save()
+
+        return redirect('set-up')
+
+    queryset = FinancialAccount.objects.filter(username=request.user)
+    networth = User.objects.get(username=request.user).net_worth
+    if (networth < 0):
+      networth = "(" + str(networth * -1) + ")"
+
+    context = {
+      "object_list": queryset,
+      "networth": networth
+    }
+    
+    return render(request, "initial.html", context)
   else:
     return redirect('Login-page')
 
