@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block content %} 
+<!-- Page Heading -->
+<h1 class="h3 mb-2 text-gray-800">Budgeting & Financial Goals</h1>
+<!--<p class="mb-4">DataTables is a third party plugin that is used to generate the demo table below.
+    For more information about DataTables, please visit the <a target="_blank"
+        href="https://datatables.net">official DataTables documentation</a>.</p>-->
+
+<!-- DataTales Example -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Set goal(s) and Tree Financial Tracker will do the rest for you</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            {% if Object_list %}
+            <table class="table table-bordered" id="dataTable1" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                      <th>Priority</th>
+                      <th>Goal Name</th>
+                      <th>Value</th>
+                      <th>Target Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for instance in Object_list %}
+                        <tr>
+                            <td>{{ instance.priority }} </td>
+                            <td><a href='{{ instance.get_absolute_urls }}'> {{ instance.goal_Name }} </a></td>
+                            <td>{{ instance.value }} </td>
+                            <td>{{ instance.target_Duration }} </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <h1>No Recorded Found</h1>
+            {% endif %}            
+            <div class="form-group row">
+                <form action="" method='POST'>
+                      {% csrf_token %}
+                            {% if messages %}
+                                            {% for message in messages %}
+                                             <div class="text-center">
+                                                {% if message.tags == 'error' %}
+                                                    <h2  style= 'color:red;'> {{ message}}</h2>
+                                                {% endif %}
+                                             </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                        <input type="text" class="form-control form-control-user" id="examplePriority"
+                                            placeholder="Priority" name="Priority">
+                                    </div>
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                        <input type="text" class="form-control form-control-user" id="exampleValue"
+                                            placeholder="Value" name="Value">
+                                    </div>
+                                    <div class="col-sm-8 mb-3 mb-sm-0">
+                                        <input type="text" class="form-control form-control-user" id="exampleGoalName"
+                                            placeholder="Goal Name" name="Goal Name">
+                                    </div>
+                                    <div class="col-sm-8 mb-3 mb-sm-0">
+                                        <input type="text" class="form-control form-control-user" id="exampleTargetDuration"
+                                            placeholder="Target Duration" name="Target Duration">
+                                    </div>
+                                    <div class="row">
+                                    <div class="col-lg-8">
+                                        <div class="card shadow mb-4">
+                                            <div class="card-body text-center">
+                                                <button class="btn btn-primary btn-block" type="submit" data-toggle="modal"
+                                                data-target="#exampleModalLg">Add New Goal</button>
+        
+
+                                            </div>
+                                        </div>
+                                    </div>
+                </form>
+            </div>
+        <!-- <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-body text-center">
+                    <a  class="btn btn-primary btn-block" type="button" data-toggle="modal"
+                    data-target="#BudgetModal">Delete</a>
+                </div>
+        
+            </div>
+        </div> -->
+    </div>                 
+        
+    
+</div>
+
+{% endblock %}

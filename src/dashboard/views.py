@@ -2,7 +2,7 @@
 from django.shortcuts import render, redirect
 from django.core.mail import EmailMessage
 from django.conf import settings
-from .models import User, Transaction, FinancialAccount
+from .models import User, Transaction, FinancialAccount, Budget
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
@@ -17,6 +17,49 @@ def home_view(request, *args, **kwargs):
     if get_user.init:
       return redirect('set-up')
     return render(request, "home.html", {})
+  else:
+    return redirect('Login-page')
+
+
+def setup_view(request, *args, **kwargs):
+  if request.user.is_authenticated:
+    if request.method == "POST":
+      if request.POST.get("completeInit"):
+        get_user = User.objects.get(username=request.user)
+        get_user.init = False
+        get_user.save()
+        return redirect('home')
+
+      elif request.POST.get("addNewAcct"):
+        username = request.user
+        acctType = request.POST.get("acctType")
+        acctName = request.POST.get("acctName")
+        acctValue = request.POST.get("acctValue")
+
+        new_fa = FinancialAccount.objects.create(
+            username=username, type=acctType, name=acctName, value=acctValue)
+        new_fa.save()
+
+        get_user = User.objects.get(username=request.user)
+        if acctType == "Assets":
+          get_user.net_worth = float(get_user.net_worth) + float(acctValue)
+        else:
+          get_user.net_worth = float(get_user.net_worth) - float(acctValue)
+        get_user.save()
+
+        return redirect('set-up')
+
+    queryset = FinancialAccount.objects.filter(username=request.user)
+    networth = User.objects.get(username=request.user).net_worth
+    if (networth < 0):
+      networth = "(" + str(networth * -1) + ")"
+
+    context = {
+        "object_list": queryset,
+        "networth": networth
+    }
+
+    return render(request, "initial.html", context)
   else:
     return redirect('Login-page')
 
@@ -41,7 +84,8 @@ def account_view(request, *args, **kwargs):
         transactionAmt = request.POST.get("transactionAmt")
         transactionRemarks = request.POST.get("transactionRemarks")
 
-        new_transaction = Transaction.objects.create(username=username, transaction_type=transactionType, date=transactionDate, transaction_name=transactionName,remarks=transactionRemarks,category=transactionCategory,amount=transactionAmt)
+        new_transaction = Transaction.objects.create(username=username, transaction_type=transactionType, date=transactionDate,
+                                                     transaction_name=transactionName, remarks=transactionRemarks, category=transactionCategory, amount=transactionAmt)
         new_transaction.save()
 
         return redirect('account')
@@ -52,7 +96,8 @@ def account_view(request, *args, **kwargs):
         acctName = request.POST.get("acctName")
         acctValue = request.POST.get("acctValue")
 
-        new_fa = FinancialAccount.objects.create(username=username, type=acctType, name=acctName, value=acctValue)
+        new_fa = FinancialAccount.objects.create(
+            username=username, type=acctType, name=acctName, value=acctValue)
         new_fa.save()
 
         get_user = User.objects.get(username=request.user)
@@ -63,8 +108,9 @@ def account_view(request, *args, **kwargs):
         get_user.save()
 
         return redirect('account')
-    
-    queryset = Transaction.objects.filter(username=request.user).order_by('-date')
+
+    queryset = Transaction.objects.filter(
+        username=request.user).order_by('-date')
 
     faset = FinancialAccount.objects.filter(username=request.user)
     networth = User.objects.get(username=request.user).net_worth
@@ -72,9 +118,9 @@ def account_view(request, *args, **kwargs):
       networth = "(" + str(networth * -1) + ")"
 
     context = {
-      "object_list": queryset,
-      "fa_list": faset,
-      "networth": networth
+        "object_list": queryset,
+        "fa_list": faset,
+        "networth": networth
     }
 
     return render(request, "account.html", context)
@@ -92,10 +138,11 @@ def transactions_view(request, *args, **kwargs):
     if get_user.init:
       return redirect('set-up')
 
-    queryset = Transaction.objects.filter(username=request.user).order_by('-date')
-    
+    queryset = Transaction.objects.filter(
+        username=request.user).order_by('-date')
+
     context = {
-      "object_list": queryset
+        "object_list": queryset
     }
 
     return render(request, "transactions.html", context)
@@ -107,62 +154,43 @@ def transactions_view(request, *args, **kwargs):
 def transaction_lookup_view(request, id):
   # Check if user is logged in
   if request.user.is_authenticated:
+    if request.method == "POST":
+      # Edit transaction
+      if request.POST.get("editTrans"):
+        username = request.user
+        Transactions = Transaction.objects.filter(username=username).get(id=id)
 
-    # Check if user has completed initial set-up
-    get_user = User.objects.get(username=request.user)
-    if get_user.init:
-      return redirect('set-up')
+        transactionType = request.POST.get("transactionType")
+        transactionDate = request.POST.get("transactionDate")
+        transactionCategory = request.POST.get("transactionCategory")
+        transactionName = request.POST.get("transactionName")
+        transactionAmt = request.POST.get("transactionAmt")
+        transactionRemarks = request.POST.get("transactionRemarks")
+
+        Transactions.transaction_type = transactionType
+        Transactions.date = transactionDate
+        Transactions.remarks = transactionRemarks
+        Transactions.category = transactionCategory
+        Transactions.amount = transactionAmt
+        Transactions.transaction_name = transactionName
+        Transactions.save()
+
+      # Delete Transaction
+      elif request.POST.get("delTrans"):
+        Transactions = Transaction.objects.filter(
+            username=request.user).get(id=id)
+        Transactions.delete()
+        return redirect("transactions")
 
     queryset = Transaction.objects.filter(username=request.user).get(id=id)
-    
+
     context = {
-      "object_list": queryset
+        "object_list": queryset
     }
 
     return render(request, "detailedTransaction.html", context)
+
   # If not, back to login page
-  else:
-    return redirect('Login-page')
-
-
-def setup_view(request, *args, **kwargs):
-  if request.user.is_authenticated:
-    if request.method == "POST":
-      if request.POST.get("completeInit"):
-        get_user = User.objects.get(username=request.user)
-        get_user.init = False
-        get_user.save()
-        return redirect('home')
-
-      elif request.POST.get("addNewAcct"):
-        username = request.user
-        acctType = request.POST.get("acctType")
-        acctName = request.POST.get("acctName")
-        acctValue = request.POST.get("acctValue")
-
-        new_fa = FinancialAccount.objects.create(username=username, type=acctType, name=acctName, value=acctValue)
-        new_fa.save()
-
-        get_user = User.objects.get(username=request.user)
-        if acctType == "Assets":
-          get_user.net_worth = float(get_user.net_worth) + float(acctValue)
-        else:
-          get_user.net_worth = float(get_user.net_worth) - float(acctValue)
-        get_user.save()
-
-        return redirect('set-up')
-
-    queryset = FinancialAccount.objects.filter(username=request.user)
-    networth = User.objects.get(username=request.user).net_worth
-    if (networth < 0):
-      networth = "(" + str(networth * -1) + ")"
-
-    context = {
-      "object_list": queryset,
-      "networth": networth
-    }
-    
-    return render(request, "initial.html", context)
   else:
     return redirect('Login-page')
 
@@ -175,6 +203,89 @@ def budget_setup_view(request, *args, **kwargs):
     return render(request, "initialBudget.html", {})
   else:
     return redirect('Login-page')
+
+
+def budget_view(request):
+  if request.user.is_authenticated:
+    # Add New Goal
+    if request.method == "POST":
+      username = request.user
+      priority = request.POST.get("Priority")
+      if priority == "":
+        messages.error(request, "..Please enter your priority.")
+        return redirect('budget')
+      goal_Name = request.POST.get("Goal Name")
+      if goal_Name == "":
+        messages.error(request, "..Please enter the name of your goal.")
+        return redirect('budget')
+      value = request.POST.get("Value")
+      if value == "":
+        messages.error(request, "..Please enter the value of your goal.")
+        return redirect('budget')
+      target_Duration = request.POST.get("Target Duration")
+      if target_Duration == "":
+        messages.error(request, "..Please enter the duration of your goal.")
+        return redirect('budget')
+
+      new_budget = Budget.objects.create(
+          username=username, priority=priority, goal_Name=goal_Name, value=value, target_Duration=target_Duration)
+      new_budget.save()
+
+      return redirect('budget')
+
+    queryset = Budget.objects.filter(username=request.user)
+
+    context = {
+        "Object_list": queryset
+    }
+    return render(request, "budgetFinancial.html", context)
+
+  else:
+    return redirect('Login-page')
+
+
+def budget_lookup_view(request, id):
+  # Check if user is logged in
+  if request.user.is_authenticated:
+    # Edit transaction
+    if request.method == "POST":
+      # Edit Goal Button
+      if request.POST.get("editGoal"):
+        username = request.user
+        budget = Budget.objects.filter(username=username).get(id=id)
+
+        priority = request.POST.get("priority")
+        goal_Name = request.POST.get("goal_Name")
+        value = request.POST.get("value")
+        target_Duration = request.POST.get("target_Duration")
+
+        budget.priority = priority
+        budget.goal_Name = goal_Name
+        budget.value = value
+        budget.target_Duration = target_Duration
+        budget.save()
+
+      # Delete Goal
+      elif request.POST.get("delGoal"):
+        Budgets = Budget.objects.filter(username=request.user).get(id=id)
+        Budgets.delete()
+        return redirect('budget')
+
+    queryset = Budget.objects.filter(username=request.user).get(id=id)
+
+    context = {
+        "Object_list": queryset
+    }
+
+    return render(request, "detailedBudget.html", context)
+
+  # If not, back to login page
+  else:
+    return redirect('Login-page')
+
+
+def set_goals(request):
+  return render(request, "SetGoals.html")
 
 
 # Account Verification / Creation Views
@@ -207,8 +318,7 @@ def Register(request):
       messages.error(request, 'Email already exists.')
       return redirect('Reg')
 
-    new_user = User.objects.create_user(
-        username=Username, email=Email, password=Password1)
+    new_user = User.objects.create_user(username=Username, email=Email, password=Password1)
     new_user.first_name = FirstName
     new_user.last_name = LastName
 
@@ -262,7 +372,7 @@ def forget_password(request):
   if request.method == 'POST':
     Email = request.POST['email']
     if User.objects.filter(email=Email):
-      return redirect('resetEmail', email=Email) #Password_verification_code
+      return redirect('resetEmail', email=Email)  # Password_verification_code
     else:
       messages.error(request, 'User does not exist.')
       return redirect('forgetPW')
@@ -272,13 +382,13 @@ def forget_password(request):
 
 def password_verification_code(request, email):
   if request.method == 'POST':
-    get_user = User.objects.get(email=email)    
-    verification = request.POST.get('Verification') 
-    check = check_password(verification,get_user.temp)
+    get_user = User.objects.get(email=email)
+    verification = request.POST.get('Verification')
+    check = check_password(verification, get_user.temp)
 
     if check:
-      messages.success(request,"Please reset your password.") 
-      return redirect('resetPass',email=email)
+      messages.success(request, "Please reset your password.")
+      return redirect('resetPass', email=email)
     else:
       messages.error(request, "The verification code is wrongly entered.")
       return redirect('enterCode', email=email)
@@ -318,9 +428,9 @@ def input_verification_code(request, email):
     check = check_password(verification, get_user.temp)
 
     if check:
-      get_user.is_active = True 
-      get_user.save() #saving the state 
-      messages.success(request,"Account activated, proceed to login.") 
+      get_user.is_active = True
+      get_user.save()  # saving the state
+      messages.success(request, "Account activated, proceed to login.")
       return redirect('Login-page')
     else:
       messages.error(request, "The verification code is wrongly entered.")
@@ -345,9 +455,9 @@ def Password_verification_code(request, email):
     random_number += random.choice(a)
 
   # generate a new instance to store the random number
-  encryptedpassword = make_password(random_number) 
-  get_user.temp = encryptedpassword 
-  get_user.save() #save the code into the database with .save()
+  encryptedpassword = make_password(random_number)
+  get_user.temp = encryptedpassword
+  get_user.save()  # save the code into the database with .save()
 
   print(random_number)
   Email_message = EmailMessage('Reset Password', f'Hi {get_user.get_full_name()}! \n Your verification code is: {random_number}. \n\n Enter this code in our website to activate your account.\n\n In case you have forgotten your username, your username is {get_user.get_username()} If you have any questions, send us an email.\n\n We’re glad you’re here!\n The Tree',
@@ -357,7 +467,7 @@ def Password_verification_code(request, email):
 
   Email_message.fail_silently = True
   Email_message.send()
-  return redirect('enterCode', email=email) #password_verification_code
+  return redirect('enterCode', email=email)  # password_verification_code
 
 
 def verification_code(request, email):
@@ -373,9 +483,9 @@ def verification_code(request, email):
     random_number += random.choice(a)
 
   # generate a new instance to store the random number
-  encryptedpassword = make_password(random_number) 
-  get_user.temp = encryptedpassword 
-  get_user.save() #save the code into the database with .save()
+  encryptedpassword = make_password(random_number)
+  get_user.temp = encryptedpassword
+  get_user.save()  # save the code into the database with .save()
 
   print(random_number)
 

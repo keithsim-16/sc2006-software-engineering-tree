@@ -9,3 +9,5 @@ class TransactionAdmin(admin.ModelAdmin):
 @admin.register(FinancialAccount)
 class FinancialAccountAdmin(admin.ModelAdmin):
     list_display = ['username', 'type', 'name', 'value']
+
+admin.site.register(Budget)

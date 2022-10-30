@@ -26,3 +26,13 @@ class FinancialAccount(models.Model):
 	type = models.CharField(max_length=225)
 	name = models.TextField()
 	value = models.DecimalField(max_digits=20,decimal_places=2)
+
+class Budget(models.Model): 
+ username = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE) 
+ priority = models.CharField(max_length=225) 
+ goal_Name = models.CharField(max_length=225) 
+ value = models.DecimalField(max_digits=20,decimal_places=2) 
+ target_Duration = models.DecimalField(max_digits=20,decimal_places=0) 
+ 
+ def get_absolute_urls(self): 
+  return f"/budgetFinancial/{self.id}/"

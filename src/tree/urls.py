@@ -22,13 +22,20 @@ urlpatterns = [
     path("admin/", admin.site.urls),
 
     # Logged In Views
-    path("", home_view, name="home"),
-    path("home/", home_view, name="home"),
-    path("account/", account_view, name="account"),
-    path("transactions/", transactions_view, name="transactions"),
-    path("transactions/<int:id>/", transaction_lookup_view, name="detailed_transaction"),
-    path("set-up/", setup_view, name="set-up"),
-    path("budget-set-up/", budget_setup_view, name="budget-set-up"),
+    path("set-up/", setup_view, name="set-up"), 
+    path("budget-set-up/", budget_setup_view, name="budget-set-up"), 
+
+    path("", home_view, name="home"), 
+    path("home/", home_view, name="home"), 
+    
+    path("account/", account_view, name="account"), 
+
+    path("transactions/", transactions_view, name="transactions"), 
+    path("transactions/<int:id>/", transaction_lookup_view, name="detailed_transaction"), 
+
+    path("budgetFinancial/",budget_view,name="budget"), 
+    path("budgetFinancial/<int:id>/",budget_lookup_view,name="detailed_budget"), 
+    path("setGoals/",set_goals,name="setGoal"), 
 
     # Account Verification / Creation Views
     path("registerYourAccount/", Register, name="Reg"), #register acct page
