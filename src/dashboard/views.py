@@ -1,5 +1,5 @@
 # Import Libraries
-from unicodedata import name
+from datetime import datetime
 from django.shortcuts import render, redirect
 from django.core.mail import EmailMessage
 from django.conf import settings
@@ -102,6 +102,11 @@ def account_view(request, *args, **kwargs):
           get_user.net_worth = float(
               get_user.net_worth) - float(transactionAmt)
           get_fa.value = float(get_fa.value) - float(transactionAmt)
+
+        if get_fa.value < 0:
+          messages.error(request, "Insufficient Funds")
+          return redirect('account')
+        
         get_fa.save()
         get_user.save()
 
@@ -109,6 +114,7 @@ def account_view(request, *args, **kwargs):
                                                      transaction_name=transactionName, remarks=transactionRemarks, category=transactionCategory, amount=transactionAmt)
         new_transaction.save()
 
+        messages.success(request, "Successfully added new transaction.")
         return redirect('account')
 
       elif request.POST.get("addNewAcct"):
@@ -127,8 +133,19 @@ def account_view(request, *args, **kwargs):
         else:
           get_user.net_worth = float(get_user.net_worth) - float(acctValue)
         get_user.save()
-
+        
+        messages.success(request, "Successfully added new financial account.")
         return redirect('account')
+
+    cur_month = Transaction.objects.filter(username=request.user, date__month=datetime.now().month)
+
+    cashflow = 0
+
+    for i in cur_month:
+      if (i.transaction_type == "Income"):
+        cashflow += i.amount
+      else:
+        cashflow -= i.amount
 
     queryset = Transaction.objects.filter(
         username=request.user).order_by('-date')
@@ -142,7 +159,9 @@ def account_view(request, *args, **kwargs):
     context = {
         "object_list": queryset,
         "fa_list": faset,
-        "networth": networth
+        "networth": networth,
+        "cashflow": cashflow,
+        "currmonth": datetime.now().strftime("%B %Y")
     }
 
     return render(request, "account.html", context)
