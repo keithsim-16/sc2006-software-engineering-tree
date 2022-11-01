@@ -13,17 +13,28 @@ from django.contrib.auth.hashers import make_password, check_password
 
 
 def home_view(request, *args, **kwargs):
-  labels=[]
-  data=[]
+  netWorthlabels=[]
+  netWorthdata=[]
+  
+  cashflowlabels=["January", "February", "March", "April", "May", "June"]
+  cashflowdata=[4215, 5312, 6251, 7841, 9821, 14984]
+  
+  incomelabels=["tfect", "Reftfyjal", "Softyjal"]
+  incomedata=[55645, 35670, 14565]
+  
+  expenseslabels=["ftyj", "tfyjrral", "tfyjtjfl"]
+  expensesdata=[5475, 35460, 154654]
+  
   queryset= History.objects.filter(username=request.user).order_by('date')
   for usr in queryset:
-    labels.append(usr.date.isoformat())
-    data.append(float(usr.amount))
+    netWorthlabels.append(usr.date.isoformat())
+    netWorthdata.append(float(usr.amount))
+  
   if request.user.is_authenticated:
     get_user = User.objects.get(username=request.user)
     if get_user.init:
       return redirect('set-up')
-    return render(request, "home.html", {'labels': labels,'data': data,})
+    return render(request, "home.html", {'netWorthlabels': netWorthlabels,'netWorthdata': netWorthdata,'cashflowlabels': cashflowlabels,'cashflowdata': cashflowdata,'incomelabels': incomelabels,'incomedata': incomedata,'expenseslabels': expenseslabels,'expensesdata': expensesdata})
   else:
     return redirect('Login-page')
 
