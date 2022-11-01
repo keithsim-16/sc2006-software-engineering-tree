@@ -9,8 +9,5 @@ class TransactionAdmin(admin.ModelAdmin):
 @admin.register(FinancialAccount)
 class FinancialAccountAdmin(admin.ModelAdmin):
     list_display = ['username', 'type', 'name', 'value']
-@admin.register(History)
-class History(admin.ModelAdmin):
-    list_display = ['username', 'date', 'amount']
 
 admin.site.register(Budget)
