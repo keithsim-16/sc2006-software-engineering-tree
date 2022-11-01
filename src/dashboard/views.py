@@ -3,7 +3,7 @@ from datetime import datetime
 from django.shortcuts import render, redirect
 from django.core.mail import EmailMessage
 from django.conf import settings
-from .models import User, Transaction, FinancialAccount, Budget
+from .models import User, Transaction, FinancialAccount, Budget, History
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
