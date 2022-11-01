@@ -13,11 +13,17 @@ from django.contrib.auth.hashers import make_password, check_password
 
 
 def home_view(request, *args, **kwargs):
+  labels=[]
+  data=[]
+  queryset= History.objects.filter(username=request.user).order_by('date')
+  for usr in queryset:
+    labels.append(usr.date.isoformat())
+    data.append(float(usr.amount))
   if request.user.is_authenticated:
     get_user = User.objects.get(username=request.user)
     if get_user.init:
       return redirect('set-up')
-    return render(request, "home.html", {})
+    return render(request, "home.html", {'labels': labels,'data': data,})
   else:
     return redirect('Login-page')
 
