@@ -40,3 +40,11 @@ class Budget(models.Model):
  
  def get_absolute_urls(self): 
   return f"/budgetFinancial/{self.id}/"
+
+class History(models.Model):
+  username = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+  date = models.DateField()
+  amount = models.DecimalField(max_digits=20,decimal_places=2)
+
+  def get_absolute_url(self):
+  	return f"/history/{self.id}/"
