@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block content %}
+<!-- Page Heading -->
+<h1 class="h3 mb-2 text-gray-800">Detailed Financial Account</h1>
+<!--<p class="mb-4">DataTables is a third party plugin that is used to generate the demo table below.
+    For more information about DataTables, please visit the <a target="_blank"
+        href="https://datatables.net">official DataTables documentation</a>.</p>-->
+
+<!-- DataTales Example -->
+<div class="row">
+  <div class="col">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Detailed Financial Account</h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          {% if messages %}
+          {% for message in messages %}
+          {% if message.tags == 'success' %}
+          <h2 style='color:green;'> {{message}}</h2>
+          {% endif %}
+          {% endfor %}
+          {% endif %}
+          <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
+            <thead>
+              <tr>
+                <th>Account Type</th>
+                <th>Account Name</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{{ object_list.type }}</td>
+                <td>{{ object_list.name }}</td>
+                {% if object_list.type == "Assets" %}
+                <td>${{ object_list.value }}</td>
+                {% endif %}
+                {% if object_list.type == "Liabilities" %}
+                <td>$({{ object_list.value }})</td>
+                {% endif %}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="card shadow mb-4">
+          <div class="card-body text-center">
+            <button class="btn btn-primary btn-block" type="button" data-toggle="modal"
+              data-target="#exampleModalLg">Edit</button>
+            <div class="modal fade" id="exampleModalLg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+              aria-hidden="true">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Edit Financial Account</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <form action="" method='POST'>
+                      {% csrf_token %}
+                      <div class="form-group">
+                        <select class="form-control form-control-lg" name="acctType">
+                          <option value="" disabled selected>Account Type</option>
+                          <option value="Assets" {% if object_list.type == 'Assets' %}selected{% endif %}>Assets</option>
+                          <option value="Liabilities" {% if object_list.type == 'Liabilities' %}selected{% endif %}>Liabilities</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <input type="text" class="form-control form-control-lg" id="acctName"
+                          value="{{ object_list.name }}" name="acctName">
+                      </div>
+                      <div class="form-group">
+                        <input type="text" class="form-control form-control-lg" id="acctValue"
+                          value="{{ object_list.value }}" name="acctValue">
+                      </div>
+                      <button class="btn btn-primary" type="submit" name="editAcct" value="1">Edit Financial
+                        Account</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card shadow mb-4">
+          <div class="card-body text-center">
+            <form action="" method='POST'>
+              {% csrf_token %}
+              <button class="btn btn-primary btn-block" type="submit" name="delAcct" value="1">Delete</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+{% endblock %}

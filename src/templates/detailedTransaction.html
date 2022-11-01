@@ -7,108 +7,136 @@
         href="https://datatables.net">official DataTables documentation</a>.</p>-->
 
 <!-- DataTales Example -->
-<div class="card shadow mb-4">
-  <div class="card-header py-3">
-    <h6 class="m-0 font-weight-bold text-primary">Detailed Transaction</h6>
-  </div>
-  <div class="card-body">
-    <div class="table-responsive">
-
-      <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Transaction Name</th>
-            <th>Remarks</th>
-            <th>Category</th>
-            <th>Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{{ object_list.date }}</td>
-            <td>{{ object_list.transaction_name }}</td>
-            <td>{{ object_list.remarks }}</td>
-            <td>{{ object_list.category }}</td>
-            <td>{{ object_list.amount }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="row">
-        <div class="col-lg-6">
-          <div class="card shadow mb-4">
-            <div class="card-body text-center">
-              <button class="btn btn-primary btn-block" type="button" data-toggle="modal"
-                data-target="#exampleModalLg">Edit</button>
-              <div class="modal fade" id="exampleModalLg" tabindex="-1" role="dialog"
-                aria-labelledby="myLargeModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title">Edit Financial Account</h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    <div class="modal-body">
-                      <form action="" method='POST'>
-                        {% csrf_token %}
-                        <div class="form-group">
-                          <select class="form-control form-control-lg" name="transactionType" required>
-                            {% if object_list.transaction_type == "Expense" %}
-                            <option selected>Expense</option>
-                            <option>Income</option>
-                            {% else %}
-                            <option selected>Income</option>
-                            <option>Expense</option>
-                            {% endif %}
-                          </select>
-                        </div>
-                        <div class="form-group">
-                          <input type="date" class="form-control form-control-lg" id="transactionDate"
-                            name="transactionDate" aria-describedby="emailHelp" placeholder="Date" required>
-                        </div>
-                        <div class="form-group">
-                          <select class="form-control form-control-lg" name="transactionCategory" required>
-                            {% if object_list.transaction_type == "Expense" %}
-                            <option selected>Food</option>
-                            <option>Travel</option>
-                            {% else %}
-                            <option selected>Travel</option>
-                            <option>Food</option>
-                            {% endif %}
-                          </select>
-                        </div>
-                        <div class="form-group">
-                          <input type="text" class="form-control form-control-lg" id="transactionName"
-                            name="transactionName" placeholder="Transaction Name" required>
-                        </div>
-                        <div class="form-group">
-                          <input type="text" class="form-control form-control-lg" id="transactionAmt"
-                            name="transactionAmt" placeholder="Transaction Amount" required>
-                        </div>
-                        <div class="form-group">
-                          <input type="text" class="form-control form-control-lg" id="transactionRemarks"
-                            name="transactionRemarks" placeholder="Remarks" required>
-                        </div>
-                        <button class="btn btn-primary" type="submit" name="editTrans" value="1">Edit
-                          Transaction</button>
-                      </form>
-                    </div>
+<div class="row">
+  <div class="col">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Detailed Transaction</h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          {% if messages %}
+          {% for message in messages %}
+          {% if message.tags == 'error' %}
+          <h2 style='color:red;'> {{message}}</h2>
+          {% else %}
+          <h2 style='color:green;'> {{message}}</h2>
+          {% endif %}
+          {% endfor %}
+          {% endif %}
+          <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Transaction Type</th>
+                <th>Transaction Account</th>
+                <th>Transaction Name</th>
+                <th>Remarks</th>
+                <th>Category</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{{ object_list.date }} </td>
+                <td>{{ object_list.transaction_type }}</td>
+                <td>{{ object_list.transaction_acct.name }}</td>
+                <td>{{ object_list.transaction_name }}</td>
+                <td>{{ object_list.remarks }} </td>
+                <td>{{ object_list.category }} </td>
+                <td {% if object_list.transaction_type == 'Income' %}style='color:green;'{% else %}style='color:red;'{% endif %}>{{ object_list.amount }} </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="card shadow mb-4">
+          <div class="card-body text-center">
+            <button class="btn btn-primary btn-block" type="button" data-toggle="modal"
+              data-target="#exampleModalLg">Edit</button>
+            <div class="modal fade" id="exampleModalLg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+              aria-hidden="true">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Edit Transaction</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <form action="" method='POST'>
+                      {% csrf_token %}
+                      <div class="form-group">
+                        <select class="form-control form-control-lg" name="transactionType" required>
+                          <option value="Income" {% if object_list.transaction_type == 'Income' %}selected{% endif %}>Income</option>
+                            <option value="Expense" {% if object_list.transaction_type == 'Expense' %}selected{% endif %}>Expense</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <select class="form-control form-control-lg" name="transactionAcct" required>
+                          <option value="" disabled selected>Transaction Account</option>
+                          {% for instance in fa_list %}
+                          {% if instance.type == "Assets" %}
+                          <option {% if object_list.transaction_acct.name == instance.name %}selected{% endif %}>{{ instance.name }}</option>
+                          {% endif %}
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <input type="date" class="form-control form-control-lg" id="transactionDate"
+                            name="transactionDate" aria-describedby="emailHelp" value="{{ object_list.date|date:"Y-m-d" }}" required>
+                      </div>
+                      <div class="form-group">
+                        <select class="form-control form-control-lg" name="transactionCategory" required>
+                          <option value="Salary" {% if object_list.category == 'Salary' %}selected{% endif %}>Salary</option>
+                          <option value="Dividends" {% if object_list.category == 'Dividends' %}selected{% endif %}>Dividends</option>
+                          <option value="Interest" {% if object_list.category == 'Interest' %}selected{% endif %}>Interest</option>
+                          <option value="Food" {% if object_list.category == 'Food' %}selected{% endif %}>Food</option>
+                          <option value="Housing" {% if object_list.category == 'Housing' %}selected{% endif %}>Housing</option>
+                          <option value="Transportation" {% if object_list.category == 'Transportation' %}selected{% endif %}>Transportation</option>
+                          <option value="Utilities" {% if object_list.category == 'Utilities' %}selected{% endif %}>Utilities</option>
+                          <option value="Insurance" {% if object_list.category == 'Insurance' %}selected{% endif %}>Insurance</option>
+                          <option value="Medical" {% if object_list.category == 'Medical' %}selected{% endif %}>Medical</option>
+                          <option value="Personal" {% if object_list.category == 'Personal' %}selected{% endif %}>Personal</option>
+                          <option value="Recreational" {% if object_list.category == 'Recreational' %}selected{% endif %}>Recreational</option>
+                          <option value="Miscellaneous" {% if object_list.category == 'Miscellaneous' %}selected{% endif %}>Miscellaneous</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <input type="text" class="form-control form-control-lg" id="transactionName"
+                          name="transactionName" placeholder="Transaction Name"
+                          value="{{ object_list.transaction_name }}" required>
+                      </div>
+                      <div class="form-group">
+                        <input type="text" class="form-control form-control-lg" id="transactionAmt"
+                          name="transactionAmt" placeholder="Transaction Amount" value="{{ object_list.amount }}"
+                          required>
+                      </div>
+                      <div class="form-group">
+                        <input type="text" class="form-control form-control-lg" id="transactionRemarks"
+                          name="transactionRemarks" placeholder="Remarks" value="{{ object_list.remarks }}" required>
+                      </div>
+                      <button class="btn btn-primary" type="submit" name="editTrans" value="1">Edit
+                        Transaction</button>
+                    </form>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-lg-6">
-          <div class="card shadow mb-4">
-            <div class="card-body text-center">
-              <form action="" method='POST'>
-                {% csrf_token %}
-                <button class="btn btn-primary btn-block" type="submit" name="delTrans" value="1">Delete</button>
-              </form>
-            </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card shadow mb-4">
+          <div class="card-body text-center">
+            <form action="" method='POST'>
+              {% csrf_token %}
+              <button class="btn btn-primary btn-block" type="submit" name="delTrans" value="1">Delete</button>
+            </form>
           </div>
         </div>
       </div>

@@ -18,21 +18,25 @@
                 <thead>
                     <tr>
                       <th>Date</th>
+                      <th>Transaction Type</th>
+                      <th>Transaction Account</th>
                       <th>Transaction Name</th>
                       <th>Remarks</th>
                       <th>Category</th>
                       <th>Amount</th>
                     </tr>
-                </thead>
+                  </thead>
                 <tbody>
                     {% for instance in object_list %}
-                        <tr>
-                            <td>{{ instance.date }} </td>
-                            <td><a href='{{ instance.get_absolute_url }}'> {{ instance.transaction_name }} </a></td>
-                            <td>{{ instance.remarks }} </td>
-                            <td>{{ instance.category }} </td>
-                            <td>{{ instance.amount }} </td>
-                        </tr>
+                    <tr>
+                        <td>{{ instance.date }} </td>
+                        <td>{{ instance.transaction_type }}</td>
+                        <td>{{ instance.transaction_acct.name }}</td>
+                        <td><a href='{{ instance.get_absolute_url }}'> {{ instance.transaction_name }} </a></td>
+                        <td>{{ instance.remarks }} </td>
+                        <td>{{ instance.category }} </td>
+                        <td {% if instance.transaction_type == 'Income' %}style='color:green;'{% else %}style='color:red;'{% endif %}>{{ instance.amount }} </td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>

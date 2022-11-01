@@ -1,4 +1,5 @@
 # Import Libraries
+from unicodedata import name
 from django.shortcuts import render, redirect
 from django.core.mail import EmailMessage
 from django.conf import settings
@@ -25,10 +26,15 @@ def setup_view(request, *args, **kwargs):
   if request.user.is_authenticated:
     if request.method == "POST":
       if request.POST.get("completeInit"):
-        get_user = User.objects.get(username=request.user)
-        get_user.init = False
-        get_user.save()
-        return redirect('home')
+        queryset = FinancialAccount.objects.filter(username=request.user)
+        if not queryset:
+          messages.error(request, "Please add financial accounts.")
+          return redirect('set-up')
+        else:
+          get_user = User.objects.get(username=request.user)
+          get_user.init = False
+          get_user.save()
+          return redirect('home')
 
       elif request.POST.get("addNewAcct"):
         username = request.user
@@ -78,13 +84,28 @@ def account_view(request, *args, **kwargs):
       if request.POST.get("addNewTrans"):
         username = request.user
         transactionType = request.POST.get("transactionType")
+        transactionAcct = request.POST.get("transactionAcct")
         transactionDate = request.POST.get("transactionDate")
         transactionCategory = request.POST.get("transactionCategory")
         transactionName = request.POST.get("transactionName")
         transactionAmt = request.POST.get("transactionAmt")
         transactionRemarks = request.POST.get("transactionRemarks")
 
-        new_transaction = Transaction.objects.create(username=username, transaction_type=transactionType, date=transactionDate,
+        get_user = User.objects.get(username=request.user)
+        get_fa = FinancialAccount.objects.get(
+            name=transactionAcct, username=username)
+        if transactionType == "Income":
+          get_user.net_worth = float(
+              get_user.net_worth) + float(transactionAmt)
+          get_fa.value = float(get_fa.value) + float(transactionAmt)
+        else:
+          get_user.net_worth = float(
+              get_user.net_worth) - float(transactionAmt)
+          get_fa.value = float(get_fa.value) - float(transactionAmt)
+        get_fa.save()
+        get_user.save()
+
+        new_transaction = Transaction.objects.create(username=username, transaction_type=transactionType, transaction_acct=get_fa, date=transactionDate,
                                                      transaction_name=transactionName, remarks=transactionRemarks, category=transactionCategory, amount=transactionAmt)
         new_transaction.save()
 
@@ -112,7 +133,8 @@ def account_view(request, *args, **kwargs):
     queryset = Transaction.objects.filter(
         username=request.user).order_by('-date')
 
-    faset = FinancialAccount.objects.filter(username=request.user)
+    faset = FinancialAccount.objects.filter(
+        username=request.user).order_by('-value')
     networth = User.objects.get(username=request.user).net_worth
     if (networth < 0):
       networth = "(" + str(networth * -1) + ")"
@@ -124,6 +146,92 @@ def account_view(request, *args, **kwargs):
     }
 
     return render(request, "account.html", context)
+  # If not, back to login page
+  else:
+    return redirect('Login-page')
+
+
+def account_lookup_view(request, id):
+  # Check if user is logged in
+  if request.user.is_authenticated:
+    if request.method == "POST":
+      # Edit Financial Account
+      if request.POST.get("editAcct"):
+        username = request.user
+        FinancialAccounts = FinancialAccount.objects.filter(
+            username=username).get(id=id)
+
+        accountType = request.POST.get("acctType")
+        accountName = request.POST.get("acctName")
+        accountValue = request.POST.get("acctValue")
+
+        get_user = User.objects.get(username=request.user)
+
+        # Update Net Worth According to Edited Financial Account
+        if (FinancialAccounts.type != accountType):
+          # Asset -> Liability
+          if (FinancialAccounts.type == "Assets"):
+            get_user.net_worth = float(
+                get_user.net_worth) - float(FinancialAccounts.value) - float(accountValue)
+          # Liability -> Asset
+          elif (FinancialAccounts.type == "Liabilities"):
+            get_user.net_worth = float(
+                get_user.net_worth) + float(FinancialAccounts.value) + float(accountValue)
+        else:
+          if (FinancialAccounts.type == "Assets"):
+            # Reduce Value of Asset
+            if (float(accountValue) < float(FinancialAccounts.value)):
+              get_user.net_worth = float(
+                  get_user.net_worth) - (float(FinancialAccounts.value) - float(accountValue))
+            # Increase Value of Asset
+            if (float(accountValue) > float(FinancialAccounts.value)):
+              get_user.net_worth = float(
+                  get_user.net_worth) + (float(accountValue) - float(FinancialAccounts.value))
+          elif (FinancialAccounts.type == "Liabilities"):
+            # Reduce Value of Liability
+            if (float(accountValue) < float(FinancialAccounts.value)):
+              get_user.net_worth = float(
+                  get_user.net_worth) + (float(FinancialAccounts.value) - float(accountValue))
+            # Increase Value of Liability
+            elif (float(accountValue) > float(FinancialAccounts.value)):
+              get_user.net_worth = float(
+                  get_user.net_worth) - (float(accountValue) - float(FinancialAccounts.value))
+        get_user.save()
+
+        FinancialAccounts.type = accountType
+        FinancialAccounts.name = accountName
+        FinancialAccounts.value = accountValue
+        FinancialAccounts.save()
+        
+        messages.success(request, "Successfully changed financial account details.")
+        return redirect('detailed_account', id)
+
+      # Delete Financial Account
+      elif request.POST.get("delAcct"):
+          FinancialAccounts = FinancialAccount.objects.filter(
+              username=request.user).get(id=id)
+
+          get_user = User.objects.get(username=request.user)
+          if (FinancialAccounts.type == "Assets"):
+            get_user.net_worth = float(
+                get_user.net_worth) - float(FinancialAccounts.value)
+          else:
+            get_user.net_worth = float(
+                get_user.net_worth) + float(FinancialAccounts.value)
+          get_user.save()
+
+          FinancialAccounts.delete()
+          return redirect("account")
+
+    queryset = FinancialAccount.objects.filter(
+        username=request.user).get(id=id)
+
+    context = {
+        "object_list": queryset
+    }
+
+    return render(request, "detailedAccount.html", context)
+
   # If not, back to login page
   else:
     return redirect('Login-page')
@@ -161,13 +269,53 @@ def transaction_lookup_view(request, id):
         Transactions = Transaction.objects.filter(username=username).get(id=id)
 
         transactionType = request.POST.get("transactionType")
+        transactionAcct = request.POST.get("transactionAcct")
         transactionDate = request.POST.get("transactionDate")
         transactionCategory = request.POST.get("transactionCategory")
         transactionName = request.POST.get("transactionName")
         transactionAmt = request.POST.get("transactionAmt")
         transactionRemarks = request.POST.get("transactionRemarks")
 
+        get_user = User.objects.get(username=username)
+        get_fa = FinancialAccount.objects.get(
+            name=Transactions.transaction_acct.name, username=username)
+
+        # Update Transaction According to Edited Transaction Details
+        # Income -> Expense
+        # income 50 become expense 50
+        if (Transactions.transaction_type == "Income" and transactionType == "Expense"):
+          get_user.net_worth = float(
+              get_user.net_worth) - float(Transactions.amount) - float(transactionAmt)
+          get_fa.value = float(get_fa.value) - \
+              float(Transactions.amount) - float(transactionAmt)
+        # Expense -> Income
+        elif (Transactions.transaction_type == "Expense" and transactionType == "Income"):
+          get_user.net_worth = float(
+              get_user.net_worth) + float(Transactions.amount) + float(transactionAmt)
+          get_fa.value = float(get_fa.value) + \
+              float(Transactions.amount) + float(transactionAmt)
+        else:
+          # Change Value
+          if (Transactions.transaction_type == "Income"):
+            get_user.net_worth = float(
+                get_user.net_worth) - (float(Transactions.amount) - float(transactionAmt))
+            get_fa.value = float(
+                get_fa.value) - (float(Transactions.amount) - float(transactionAmt))
+          elif (Transactions.transaction_type == "Expense"):
+            get_user.net_worth = float(
+                get_user.net_worth) + (float(Transactions.amount) - float(transactionAmt))
+            get_fa.value = float(
+                get_fa.value) + (float(Transactions.amount) - float(transactionAmt))
+
+        if get_fa.value < 0:
+          messages.error(request, "Insufficient Funds")
+          return redirect('detailed_transaction', id)
+
+        get_user.save()
+        get_fa.save()
+
         Transactions.transaction_type = transactionType
+        Transactions.transaction_acct.name = transactionAcct
         Transactions.date = transactionDate
         Transactions.remarks = transactionRemarks
         Transactions.category = transactionCategory
@@ -175,17 +323,38 @@ def transaction_lookup_view(request, id):
         Transactions.transaction_name = transactionName
         Transactions.save()
 
+        messages.success(request, "Successfully changed transaction details.")
+        return redirect('detailed_transaction', id)
+
       # Delete Transaction
       elif request.POST.get("delTrans"):
-        Transactions = Transaction.objects.filter(
-            username=request.user).get(id=id)
+        username = request.user
+        Transactions = Transaction.objects.filter(username=username).get(id=id)
+
+        get_user = User.objects.get(username=request.user)
+        get_fa = FinancialAccount.objects.get(
+            name=Transactions.transaction_acct.name, username=username)
+
+        if Transactions.transaction_type == "Income":
+          get_user.net_worth = float(
+              get_user.net_worth) - float(Transactions.amount)
+          get_fa.value = float(get_fa.value) - float(Transactions.amount)
+        else:
+          get_user.net_worth = float(
+              get_user.net_worth) + float(Transactions.amount)
+          get_fa.value = float(get_fa.value) + float(Transactions.amount)
+        get_user.save()
+        get_fa.save()
+
         Transactions.delete()
         return redirect("transactions")
 
     queryset = Transaction.objects.filter(username=request.user).get(id=id)
+    faset = FinancialAccount.objects.filter(username=request.user)
 
     context = {
-        "object_list": queryset
+        "object_list": queryset,
+        "fa_list": faset
     }
 
     return render(request, "detailedTransaction.html", context)
@@ -318,7 +487,8 @@ def Register(request):
       messages.error(request, 'Email already exists.')
       return redirect('Reg')
 
-    new_user = User.objects.create_user(username=Username, email=Email, password=Password1)
+    new_user = User.objects.create_user(
+        username=Username, email=Email, password=Password1)
     new_user.first_name = FirstName
     new_user.last_name = LastName
 

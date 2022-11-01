@@ -323,7 +323,14 @@
                     </tfoot>
                   </table>
                   {% else %}
-                    <h1>Please Add Financial Accounts</h1>
+                    {% if messages %}
+                      {% for message in messages %}                 
+                        {% if message.tags == 'error' %}
+                        <h2 style='color:red;'> {{message}}</h2>
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %}
+                    <h1>No financial accounts added.</h1>
                   {% endif %}
                 </div>
               </div>
@@ -364,7 +371,8 @@
                               <input type="text" class="form-control form-control-lg" id="acctValue"
                                 placeholder="Account Value" name="acctValue">
                             </div>
-                            <button class="btn btn-primary" type="submit" name="addNewAcct" value="1">Add New Account</button>
+                            <button class="btn btn-primary" type="submit" name="addNewAcct" value="1">Add New
+                              Account</button>
                           </form>
                         </div>
                       </div>
@@ -378,12 +386,12 @@
               <div class="card shadow mb-4">
                 <div class="card-body text-center">
                   <!--<a href="/home">-->
-                    <form action="" method='POST'> 
-                      {% csrf_token %}
-                      <button class="btn btn-primary btn-block" type="submit"
-                        data-target="#exampleModalLg" name="completeInit" value="1">Complete</button>
-                    </form>
-                 <!-- </a>-->
+                  <form action="" method='POST'>
+                    {% csrf_token %}
+                    <button class="btn btn-primary btn-block" type="submit" data-target="#exampleModalLg"
+                      name="completeInit" value="1">Complete</button>
+                  </form>
+                  <!-- </a>-->
                 </div>
               </div>
             </div>

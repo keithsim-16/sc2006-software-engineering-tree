@@ -28,7 +28,7 @@
           {% if instance.type == "Assets" %}
           <tr>
             <td></td>
-            <td>{{ instance.name }}</td>
+            <td><a href='{{ instance.get_absolute_url }}'>{{ instance.name }}</a></td>
             <td>${{ instance.value }}</td>
           </tr>
           {% endif %}
@@ -42,7 +42,7 @@
           {% if instance.type == "Liabilities" %}
           <tr>
             <td></td>
-            <td>{{ instance.name }}</td>
+            <td><a href='{{ instance.get_absolute_url }}'>{{ instance.name }}</a></td>
             <td>$({{ instance.value }})</td>
           </tr>
           {% endif %}
@@ -68,7 +68,7 @@
       <div class="card-body">
         <h4 class="small font-weight-bold">Goal: $500 <span class="float-right">20%</span></h4>
         <div class="progress mb-4">
-          <div class="progress-bar bg-danger" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0"
+          <div class="progress-bar bg-danger" role="progressbar" style="width: 50%" aria-valuenow="20" aria-valuemin="0"
             aria-valuemax="100"></div>
         </div>
       </div>
@@ -127,7 +127,7 @@
                         <input type="text" class="form-control form-control-lg" id="acctValue"
                           placeholder="Account Value" name="acctValue">
                       </div>
-                      <button class="btn btn-primary" type="submit" name="addNewAcct" value="1">Add New Transaction</button>
+                      <button class="btn btn-primary" type="submit" name="addNewAcct" value="1">Add New Financial Account</button>
                     </form>
                   </div>
                 </div>
@@ -163,13 +163,34 @@
                         </select>
                       </div>
                       <div class="form-group">
+                        <select class="form-control form-control-lg" name="transactionAcct" required>
+                          <option value="" disabled selected>Transaction Account</option>
+                          {% for instance in fa_list %}
+                            {% if instance.type == "Assets" %}
+                            <option>{{ instance.name }}</option>
+                            {% endif %}
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="form-group">
                         <input type="date" class="form-control form-control-lg" id="transactionDate"
                           name="transactionDate" aria-describedby="emailHelp" placeholder="Date" required>
                       </div>
                       <div class="form-group">
                         <select class="form-control form-control-lg" name="transactionCategory" required>
                           <option value="" disabled selected>Category</option>
+                          <option>Salary</option>
+                          <option>Dividends</option>
+                          <option>Interest</option>
                           <option>Food</option>
+                          <option>Housing</option>
+                          <option>Transportation</option>
+                          <option>Utilities</option>
+                          <option>Insurance</option>
+                          <option>Medical</option>
+                          <option>Personal</option>
+                          <option>Recreational</option>
+                          <option>Miscellaneous</option>
                         </select>
                       </div>
                       <div class="form-group">
@@ -223,6 +244,8 @@
             <thead>
               <tr>
                 <th>Date</th>
+                <th>Transaction Type</th>
+                <th>Transaction Account</th>
                 <th>Transaction Name</th>
                 <th>Remarks</th>
                 <th>Category</th>
@@ -233,10 +256,12 @@
               {% for instance in object_list|slice:":10" %}
                 <tr>
                     <td>{{ instance.date }} </td>
+                    <td>{{ instance.transaction_type }}</td>
+                    <td>{{ instance.transaction_acct.name }}</td>
                     <td><a href='{{ instance.get_absolute_url }}'> {{ instance.transaction_name }} </a></td>
                     <td>{{ instance.remarks }} </td>
                     <td>{{ instance.category }} </td>
-                    <td>{{ instance.amount }} </td>
+                    <td {% if instance.transaction_type == 'Income' %}style='color:green;'{% else %}style='color:red;'{% endif %}>{{ instance.amount }} </td>
                 </tr>
               {% endfor %}
             </tbody>

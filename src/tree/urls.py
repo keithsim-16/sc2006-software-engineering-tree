@@ -29,6 +29,7 @@ urlpatterns = [
     path("home/", home_view, name="home"), 
     
     path("account/", account_view, name="account"), 
+    path("account/<int:id>/", account_lookup_view, name="detailed_account"), 
 
     path("transactions/", transactions_view, name="transactions"), 
     path("transactions/<int:id>/", transaction_lookup_view, name="detailed_transaction"), 
