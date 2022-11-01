@@ -3,32 +3,64 @@ from datetime import datetime
 from django.shortcuts import render, redirect
 from django.core.mail import EmailMessage
 from django.conf import settings
-from .models import User, Transaction, FinancialAccount, Budget, History
+from .models import User, Transaction, FinancialAccount, Budget
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
-
-
+from dateutil.relativedelta import relativedelta
 # Logged in Views
 
 
 def home_view(request, *args, **kwargs):
-  netWorthlabels=[]
-  netWorthdata=[]
   
-  cashflowlabels=["January", "February", "March", "April", "May", "June"]
-  cashflowdata=[4215, 5312, 6251, 7841, 9821, 14984]
+
   
-  incomelabels=["tfect", "Reftfyjal", "Softyjal"]
-  incomedata=[55645, 35670, 14565]
+  cashflowdata=[]
+  cashflowlabels=[]
+  cashflow = [0]*12
+  for i in range(12):
+    cur_month = Transaction.objects.filter(username=request.user, date__month=datetime.now().month-i)
+    cashflowlabels.append([(datetime.now()+ relativedelta(months=-i)).strftime("%b")])
+    for j in cur_month:
+      if (j.transaction_type == "Income"):
+        cashflow[i] += j.amount
+      else:
+        cashflow[i] -= j.amount
+  for k in cashflow:
+    cashflowdata.append(float(k))
+    
+  netWorthdata=[float(User.objects.get(username=request.user).net_worth)-float(cashflow[0])]
+  netWorthlabels=[datetime.now().strftime("%b")]
+  for i in range(1,12):
+    netWorthdata.append(netWorthdata[i-1]-float(cashflow[i]))
+    netWorthlabels.append((datetime.now()+ relativedelta(months=-i)).strftime("%b"))
+    
   
-  expenseslabels=["ftyj", "tfyjrral", "tfyjtjfl"]
-  expensesdata=[5475, 35460, 154654]
+    
+  cashflowlabels.reverse()
+  cashflowdata.reverse()
+  netWorthdata.reverse()
+  netWorthlabels.reverse()
   
-  queryset= History.objects.filter(username=request.user).order_by('date')
-  for usr in queryset:
-    netWorthlabels.append(usr.date.isoformat())
-    netWorthdata.append(float(usr.amount))
+  
+  
+  incomelabels=[]
+  incomedata=[]
+  
+  expenseslabels=[]
+  expensesdata=[]
+  
+  
+    
+  queryset= Transaction.objects.filter(username=request.user).filter(transaction_type="Income").order_by('amount')
+  for transaction in queryset:
+    incomelabels.append(transaction.transaction_name)
+    incomedata.append(float(transaction.amount))
+    
+  queryset= Transaction.objects.filter(username=request.user).filter(transaction_type="Expense").order_by('amount')
+  for transaction in queryset:
+    expenseslabels.append(transaction.transaction_name)
+    expensesdata.append(float(transaction.amount))
   
   if request.user.is_authenticated:
     get_user = User.objects.get(username=request.user)
