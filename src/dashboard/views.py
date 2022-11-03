@@ -12,60 +12,70 @@ from dateutil.relativedelta import relativedelta
 
 
 def home_view(request, *args, **kwargs):
-  
-
-  
-  cashflowdata=[]
-  cashflowlabels=[]
-  cashflow = [0]*12
-  for i in range(12):
-    cur_month = Transaction.objects.filter(username=request.user, date__month=datetime.now().month-i)
-    cashflowlabels.append([(datetime.now()+ relativedelta(months=-i)).strftime("%b")])
-    for j in cur_month:
-      if (j.transaction_type == "Income"):
-        cashflow[i] += j.amount
-      else:
-        cashflow[i] -= j.amount
-  for k in cashflow:
-    cashflowdata.append(float(k))
-    
-  netWorthdata=[float(User.objects.get(username=request.user).net_worth)-float(cashflow[0])]
-  netWorthlabels=[datetime.now().strftime("%b")]
-  for i in range(1,12):
-    netWorthdata.append(netWorthdata[i-1]-float(cashflow[i]))
-    netWorthlabels.append((datetime.now()+ relativedelta(months=-i)).strftime("%b"))
-    
-  
-    
-  cashflowlabels.reverse()
-  cashflowdata.reverse()
-  netWorthdata.reverse()
-  netWorthlabels.reverse()
-  
-  
-  
-  incomelabels=[]
-  incomedata=[]
-  
-  expenseslabels=[]
-  expensesdata=[]
-  
-  
-    
-  queryset= Transaction.objects.filter(username=request.user).filter(transaction_type="Income").order_by('amount')
-  for transaction in queryset:
-    incomelabels.append(transaction.transaction_name)
-    incomedata.append(float(transaction.amount))
-    
-  queryset= Transaction.objects.filter(username=request.user).filter(transaction_type="Expense").order_by('amount')
-  for transaction in queryset:
-    expenseslabels.append(transaction.transaction_name)
-    expensesdata.append(float(transaction.amount))
-  
   if request.user.is_authenticated:
     get_user = User.objects.get(username=request.user)
     if get_user.init:
       return redirect('set-up')
+
+  
+    cashflowdata=[]
+    cashflowlabels=[]
+    cashflow = [0]*12
+    for i in range(12):
+      cur_month = Transaction.objects.filter(username=request.user, date__month=datetime.now().month-i)
+      cashflowlabels.append([(datetime.now()+ relativedelta(months=-i)).strftime("%b")])
+      for j in cur_month:
+        if (j.transaction_type == "Income"):
+          cashflow[i] += j.amount
+        else:
+          cashflow[i] -= j.amount
+    for k in cashflow:
+      cashflowdata.append(float(k))
+    
+    netWorthdata=[float(User.objects.get(username=request.user).net_worth)-float(cashflow[0])]
+    netWorthlabels=[datetime.now().strftime("%b")]
+    for i in range(1,12):
+      netWorthdata.append(netWorthdata[i-1]-float(cashflow[i]))
+      netWorthlabels.append((datetime.now()+ relativedelta(months=-i)).strftime("%b"))
+    
+  
+    
+    cashflowlabels.reverse()
+    cashflowdata.reverse()
+    netWorthdata.reverse()
+    netWorthlabels.reverse()
+  
+  
+  
+    incomelabels=[]
+    incomedata=[]
+  
+    expenseslabels=[]
+    expensesdata=[]
+  
+  
+    
+    queryset= Transaction.objects.filter(username=request.user).filter(transaction_type="Income").order_by('amount')
+    for transaction in queryset:
+      if transaction.category in incomelabels:
+        for i in range(len(incomelabels)):
+          if transaction.category == incomelabels[i]:
+            incomedata[i]=incomedata[i]+float(transaction.amount)
+      else:
+        incomelabels.append(transaction.category)
+        incomedata.append(float(transaction.amount))
+    
+    queryset= Transaction.objects.filter(username=request.user).filter(transaction_type="Expense").order_by('amount')
+    for transaction in queryset:
+      if transaction.category in incomelabels:
+        for i in range(len(expenseslabels)):
+          if transaction.category == expenseslabels[i]:
+            expensesdata[i]=expensesdata[i]+float(transaction.amount)
+      else:
+        expenseslabels.append(transaction.category)
+        expensesdata.append(float(transaction.amount))
+  
+  
     return render(request, "home.html", {'netWorthlabels': netWorthlabels,'netWorthdata': netWorthdata,'cashflowlabels': cashflowlabels,'cashflowdata': cashflowdata,'incomelabels': incomelabels,'incomedata': incomedata,'expenseslabels': expenseslabels,'expensesdata': expensesdata})
   else:
     return redirect('Login-page')
