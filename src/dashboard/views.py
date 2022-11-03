@@ -17,13 +17,16 @@ def home_view(request, *args, **kwargs):
     if get_user.init:
       return redirect('set-up')
 
-  
+    transactionhistory = Transaction.objects.filter(username=request.user).order_by('date')
+    earliest_month=transactionhistory[0].date
+    firstofthismonth=datetime.now().replace(day=1)
+    monthstodisplay=1+(firstofthismonth.year - earliest_month.year) * 12 +firstofthismonth.month - earliest_month.month
     cashflowdata=[]
     cashflowlabels=[]
-    cashflow = [0]*12
-    for i in range(12):
+    cashflow = [0]*monthstodisplay
+    for i in range(monthstodisplay):
       cur_month = Transaction.objects.filter(username=request.user, date__month=datetime.now().month-i)
-      cashflowlabels.append([(datetime.now()+ relativedelta(months=-i)).strftime("%b")])
+      cashflowlabels.append((datetime.now()+ relativedelta(months=-i)).strftime("%b"))
       for j in cur_month:
         if (j.transaction_type == "Income"):
           cashflow[i] += j.amount
@@ -31,31 +34,26 @@ def home_view(request, *args, **kwargs):
           cashflow[i] -= j.amount
     for k in cashflow:
       cashflowdata.append(float(k))
-    
+   
     netWorthdata=[float(User.objects.get(username=request.user).net_worth)-float(cashflow[0])]
     netWorthlabels=[datetime.now().strftime("%b")]
-    for i in range(1,12):
+    for i in range(1,monthstodisplay):
       netWorthdata.append(netWorthdata[i-1]-float(cashflow[i]))
       netWorthlabels.append((datetime.now()+ relativedelta(months=-i)).strftime("%b"))
-    
-  
     
     cashflowlabels.reverse()
     cashflowdata.reverse()
     netWorthdata.reverse()
     netWorthlabels.reverse()
   
-  
-  
     incomelabels=[]
     incomedata=[]
   
     expenseslabels=[]
     expensesdata=[]
-  
-  
     
     queryset= Transaction.objects.filter(username=request.user).filter(transaction_type="Income").order_by('amount')
+    
     for transaction in queryset:
       if transaction.category in incomelabels:
         for i in range(len(incomelabels)):
@@ -74,8 +72,7 @@ def home_view(request, *args, **kwargs):
       else:
         expenseslabels.append(transaction.category)
         expensesdata.append(float(transaction.amount))
-  
-  
+
     return render(request, "home.html", {'netWorthlabels': netWorthlabels,'netWorthdata': netWorthdata,'cashflowlabels': cashflowlabels,'cashflowdata': cashflowdata,'incomelabels': incomelabels,'incomedata': incomedata,'expenseslabels': expenseslabels,'expensesdata': expensesdata})
   else:
     return redirect('Login-page')
