@@ -16,11 +16,15 @@ def home_view(request, *args, **kwargs):
     get_user = User.objects.get(username=request.user)
     if get_user.init:
       return redirect('set-up')
-
     transactionhistory = Transaction.objects.filter(username=request.user).order_by('date')
-    earliest_month=transactionhistory[0].date
-    firstofthismonth=datetime.now().replace(day=1)
-    monthstodisplay=1+(firstofthismonth.year - earliest_month.year) * 12 +firstofthismonth.month - earliest_month.month
+    print(transactionhistory)
+    if transactionhistory.exists():
+      earliest_month=transactionhistory[0].date
+      firstofthismonth=datetime.now().replace(day=1)
+      monthstodisplay=1+(firstofthismonth.year - earliest_month.year) * 12 +firstofthismonth.month - earliest_month.month
+    else:
+      monthstodisplay=1
+      
     cashflowdata=[]
     cashflowlabels=[]
     cashflow = [0]*monthstodisplay
