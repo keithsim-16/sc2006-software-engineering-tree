@@ -3,19 +3,21 @@ from datetime import datetime
 from django.shortcuts import render, redirect
 from django.core.mail import EmailMessage
 from django.conf import settings
-from .models import User, Transaction, FinancialAccount, Budget
+from .models import User, Transaction, FinancialAccount, Budget, SetAside
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
 from dateutil.relativedelta import relativedelta
+
+from .controllers import dataGovAPI
+
 # Logged in Views
-
-
 def home_view(request, *args, **kwargs):
   if request.user.is_authenticated:
     get_user = User.objects.get(username=request.user)
     if get_user.init:
       return redirect('set-up')
+
     transactionhistory = Transaction.objects.filter(username=request.user).order_by('date')
     print(transactionhistory)
     if transactionhistory.exists():
@@ -30,7 +32,7 @@ def home_view(request, *args, **kwargs):
     cashflow = [0]*monthstodisplay
     for i in range(monthstodisplay):
       cur_month = Transaction.objects.filter(username=request.user, date__month=datetime.now().month-i)
-      cashflowlabels.append((datetime.now()+ relativedelta(months=-i)).strftime("%b"))
+      cashflowlabels.append((datetime.now() + relativedelta(months=-i)).strftime("%b"))
       for j in cur_month:
         if (j.transaction_type == "Income"):
           cashflow[i] += j.amount
@@ -151,6 +153,10 @@ def account_view(request, *args, **kwargs):
         transactionAmt = request.POST.get("transactionAmt")
         transactionRemarks = request.POST.get("transactionRemarks")
 
+        if float(transactionAmt) < 0:
+          messages.error(request, "Transaction amount should be greater than zero.")
+          return redirect('account')
+
         get_user = User.objects.get(username=request.user)
         get_fa = FinancialAccount.objects.get(
             name=transactionAcct, username=username)
@@ -182,6 +188,10 @@ def account_view(request, *args, **kwargs):
         acctType = request.POST.get("acctType")
         acctName = request.POST.get("acctName")
         acctValue = request.POST.get("acctValue")
+
+        if float(acctValue) < 0:
+          messages.error(request, "Account value should be greater than zero.")
+          return redirect('account')
 
         new_fa = FinancialAccount.objects.create(
             username=username, type=acctType, name=acctName, value=acctValue)
@@ -446,16 +456,18 @@ def transaction_lookup_view(request, id):
 def budget_setup_view(request, *args, **kwargs):
   if request.user.is_authenticated:
     get_user = User.objects.get(username=request.user)
-    if get_user.init:
-      return redirect('set-up')
-    return render(request, "initialBudget.html", {})
-  else:
-    return redirect('Login-page')
+    if request.method == "POST":
+      if request.POST.get("completeBudgetInit"):
+        queryset = Budget.objects.filter(username=request.user)
+        if not queryset:
+          messages.error(request, "Please add budget.")
+          return redirect('budget-set-up')
+        else:
+          get_user = User.objects.get(username=request.user)
+          get_user.budget_init = False
+          get_user.save()
+          return redirect('setGoal')
 
-
-def budget_view(request):
-  if request.user.is_authenticated:
-    # Add New Goal
     if request.method == "POST":
       username = request.user
       priority = request.POST.get("Priority")
@@ -475,8 +487,22 @@ def budget_view(request):
         messages.error(request, "..Please enter the duration of your goal.")
         return redirect('budget')
 
+      if target_Duration.isdigit() == False:
+        messages.error(request, "..Please enter in the target duration in integer only.")
+        return redirect('budget')
+
+      get_user.leftOver = float(get_user.net_worth) - float(get_user.dividends) - float(get_user.interest) - float(get_user.food) - float(get_user.housing) - float(get_user.transportation) - float(get_user.utilities)- float(get_user.insurance) - float(get_user.medical) - float(get_user.personal)- float(get_user.recreational) - float(get_user.miscellaneous)
+
+      get_user.goalPrice = float(value)/float(target_Duration)
+
+
+      if get_user.leftOver/30 < get_user.goalPrice:
+        remarks = "It is not possible to achieve this goal, please delete this goal and choose wisely"
+      else:
+        remarks = "You must save up $" + str(round(get_user.goalPrice*30,2)) + " per month or $" + str(round(get_user.goalPrice,2)) + " per day."
+      
       new_budget = Budget.objects.create(
-          username=username, priority=priority, goal_Name=goal_Name, value=value, target_Duration=target_Duration)
+          username=username, priority=priority, goal_Name=goal_Name, value=value, target_Duration=target_Duration,remarks = remarks)
       new_budget.save()
 
       return redirect('budget')
@@ -487,6 +513,20 @@ def budget_view(request):
         "Object_list": queryset
     }
     return render(request, "budgetFinancial.html", context)
+  else:
+    return redirect('Login-page')
+
+
+def budget_view(request):
+  if request.user.is_authenticated:
+    get_user = User.objects.get(username=request.user)
+    if get_user.init:
+      return redirect('set-up')
+
+    if get_user.budget_init:
+      return redirect('budget-set-up')
+
+    return redirect('setGoal')
 
   else:
     return redirect('Login-page')
@@ -532,8 +572,351 @@ def budget_lookup_view(request, id):
     return redirect('Login-page')
 
 
+def set_aside_view(request,id):
+  # Check if user is logged in
+  if request.user.is_authenticated:
+    # Edit transaction
+    if request.method == "POST":
+      get_user = User.objects.get(username=request.user)
+      # Edit Goal Button
+      if request.POST.get("editSetAside"):
+        username = request.user
+        setAside = SetAside.objects.filter(username=username).get(id=id)
+
+        setCat = request.POST.get("SetCategory")
+        setAmount = request.POST.get("SetAmt")
+
+        if setAside.category == setCat:
+          if setCat =='Dividends':
+              get_user.dividends = float(get_user.dividends) - float(setAside.amount)
+              get_user.dividends = float(get_user.dividends) + float(setAmount)
+              get_user.save()
+
+          if setCat == 'Interest':
+              get_user.interest = float(get_user.interest) - float(setAside.amount)
+              get_user.interest = float(get_user.interest) + float(setAmount)
+              get_user.save()
+                
+          if setCat =='Food':
+              get_user.food = float(get_user.food) - float(setAside.amount)
+              get_user.food = float(get_user.food) + float(setAmount)
+              get_user.save()
+
+          if setCat == 'Housing':
+              get_user.housing = float(get_user.housing) - float(setAside.amount)
+              get_user.housing = float(get_user.housing) + float(setAmount)
+              get_user.save()
+
+          if setCat =='Transportation':
+              get_user.transportation = float(get_user.transportation) - float(setAside.amount)
+              get_user.transportation = float(get_user.transportation) + float(setAmount)
+              get_user.save()
+
+          if setCat == 'Utilities':
+              get_user.utilities = float(get_user.utilities) - float(setAside.amount)
+              get_user.utilities = float(get_user.utilities) + float(setAmount)
+              get_user.save()
+                
+          if setCat =='Insurance':
+              get_user.insurance = float(get_user.insurance) - float(setAside.amount)
+              get_user.insurance = float(get_user.insurance) + float(setAmount)
+              get_user.save()
+
+          if setCat == 'Medical':
+              get_user.medical = float(get_user.medical) - float(setAside.amount)
+              get_user.medical = float(get_user.medical) + float(setAmount)
+              get_user.save()
+
+          if setCat == 'Personal':
+              get_user.personal = float(get_user.personal) - float(setAside.amount)
+              get_user.personal = float(get_user.personal) + float(setAmount)
+              get_user.save()
+                
+          if setCat =='Recreational':
+              get_user.recreational = float(get_user.recreational) - float(setAside.amount)
+              get_user.recreational = float(get_user.recreational) + float(setAmount)
+              get_user.save()
+
+          if setCat == 'Miscellaneous':
+              get_user.miscellaneous = float(get_user.miscellaneous) - float(setAside.amount)
+              get_user.miscellaneous = float(get_user.miscellaneous) + float(setAmount)
+              get_user.save()
+        else:
+          if setAside.category =='Dividends':
+              get_user.dividends = float(get_user.dividends) - float(setAside.amount)
+              get_user.save()
+
+          if setCat =='Dividends':
+              get_user.dividends = float(get_user.dividends) + float(setAmount)
+              get_user.save()
+
+          if setAside.category == 'Interest':
+              get_user.interest = float(get_user.interest) - float(setAside.amount)
+              get_user.save()
+
+          if setCat == 'Interest':
+              get_user.interest = float(get_user.interest) + float(setAmount)
+              get_user.save()
+
+          if setAside.category =='Food':
+              get_user.food = float(get_user.food) - float(setAside.amount)
+              get_user.save()
+
+          if setCat =='Food':
+              get_user.food = float(get_user.food) + float(setAmount)
+              get_user.save()
+
+          if setAside.category == 'Housing':
+              get_user.housing = float(get_user.housing) - float(setAside.amount)
+              get_user.save()
+
+          if setCat == 'Housing':
+              get_user.housing = float(get_user.housing) + float(setAmount)
+              get_user.save()
+
+          if setAside.category == 'Transportation':
+              get_user.transportation = float(get_user.transportation) - float(setAside.amount)
+              get_user.save()
+
+          if setCat == 'Transportation':
+              get_user.transportation = float(get_user.transportation) + float(setAmount)
+              get_user.save()
+
+          if setAside.category == 'Utilities':
+              get_user.utilities = float(get_user.utilities) - float(setAside.amount)
+              get_user.save()
+
+          if setCat == 'Utilities':
+              get_user.utilities = float(get_user.utilities) + float(setAmount)
+              get_user.save()
+
+          if setAside.category == 'Insurance':
+              get_user.insurance = float(get_user.insurance) - float(setAside.amount)
+              get_user.save()
+
+          if setCat == 'Insurance':
+              get_user.insurance = float(get_user.insurance) + float(setAmount)
+              get_user.save()
+
+          if setAside.category == 'Medical':
+              get_user.medical = float(get_user.medical) - float(setAside.amount)
+              get_user.save()
+
+          if setCat == 'Medical':
+              get_user.medical = float(get_user.medical) + float(setAmount)
+              get_user.save()
+
+          if setAside.category == 'Personal':
+              get_user.personal = float(get_user.personal) - float(setAside.amount)
+              get_user.save()
+
+          if setCat == 'Personal':
+              get_user.personal = float(get_user.personal) + float(setAmount)
+              get_user.save()
+
+          if setAside.category == 'Recreational':
+              get_user.recreational = float(get_user.recreational) - float(setAside.amount)
+              get_user.save()
+
+          if setCat == 'Recreational':
+              get_user.recreational = float(get_user.recreational) + float(setAmount)
+              get_user.save()
+
+          if setAside.category == 'Miscellaneous':
+              get_user.miscellaneous = float(get_user.miscellaneous) - float(setAside.amount)
+              get_user.save()
+
+          if setCat == 'Miscellaneous':
+              get_user.miscellaneous = float(get_user.miscellaneous) + float(setAmount)
+              get_user.save()
+
+
+        setAside.category=setCat
+        setAside.amount=setAmount
+        
+        setAside.save()
+
+      # Delete Goal
+      elif request.POST.get("delSetAside"):
+        setAside = SetAside.objects.filter(username=request.user).get(id=id)
+
+        if setAside.category =='Dividends':
+            get_user.dividends = float(get_user.dividends) - float(setAside.amount)
+            get_user.save()
+
+        if setAside.category == 'Interest':
+            get_user.interest = float(get_user.interest) - float(setAside.amount)
+            get_user.save()
+              
+        if setAside.category =='Food':
+            get_user.food = float(get_user.food) - float(setAside.amount)
+            get_user.save()
+
+        if setAside.category == 'Housing':
+            get_user.housing = float(get_user.housing) - float(setAside.amount)
+            get_user.save()
+
+        if setAside.category =='Transportation':
+            get_user.transportation = float(get_user.transportation) - float(setAside.amount)
+            get_user.save()
+
+        if setAside.category == 'Utilities':
+            get_user.utilities = float(get_user.utilities) - float(setAside.amount)
+            get_user.save()
+              
+        if setAside.category =='Insurance':
+            get_user.insurance = float(get_user.insurance) - float(setAside.amount)
+            get_user.save()
+
+        if setAside.category == 'Medical':
+            get_user.medical = float(get_user.medical) - float(setAside.amount)
+            get_user.save()
+
+        if setAside.category == 'Personal':
+            get_user.personal = float(get_user.personal) - float(setAside.amount)
+            get_user.save()
+              
+        if setAside.category =='Recreational':
+            get_user.recreational = float(get_user.recreational) - float(setAside.amount)
+            get_user.save()
+
+        if setAside.category == 'Miscellaneous':
+            get_user.miscellaneous = float(get_user.miscellaneous) - float(setAside.amount)
+            get_user.save()
+
+        setAside.delete()
+        return redirect('setGoal')
+
+    queryset = SetAside.objects.filter(username=request.user).get(id=id)
+
+    context = {
+        "Object_list": queryset
+    }
+
+    return render(request, "detailedSetAside.html", context)
+
+  # If not, back to login page
+  else:
+    return redirect('Login-page')
+
+
 def set_goals(request):
-  return render(request, "SetGoals.html")
+  if request.user.is_authenticated:
+    if request.method == "POST":
+        get_user = User.objects.get(username=request.user)
+        if request.POST.get("addNewSetAside"):
+          username = request.user
+          setCategory = request.POST.get("SetCategory")
+          if setCategory == "":
+            messages.error(request, "..Please enter your category.")
+            return redirect('setGoal')
+          setAmt = request.POST.get("SetAmt")
+          if setAmt == "":
+            messages.error(request, "..Please enter your amount.")
+            return redirect('setGoal')
+
+
+          if setCategory =='Dividends':
+              get_user.dividends = float(get_user.dividends) + float(setAmt)
+              get_user.save()
+
+          if setCategory == 'Interest':
+              get_user.interest = float(get_user.interest) + float(setAmt)
+              get_user.save()
+              
+          if setCategory =='Food':
+              get_user.food = float(get_user.food) + float(setAmt)
+              get_user.save()
+
+          if setCategory == 'Housing':
+              get_user.housing = float(get_user.housing) + float(setAmt)
+              get_user.save()
+
+          if setCategory =='Transportation':
+              get_user.transportation = float(get_user.transportation) + float(setAmt)
+              get_user.save()
+
+          if setCategory == 'Utilities':
+              get_user.utilities = float(get_user.utilities) + float(setAmt)
+              get_user.save()
+              
+          if setCategory =='Insurance':
+              get_user.insurance = float(get_user.insurance) + float(setAmt)
+              get_user.save()
+
+          if setCategory == 'Medical':
+              get_user.medical = float(get_user.medical) + float(setAmt)
+              get_user.save()
+
+          if setCategory == 'Personal':
+              get_user.personal = float(get_user.personal) + float(setAmt)
+              get_user.save()
+              
+          if setCategory =='Recreational':
+              get_user.recreational = float(get_user.recreational) + float(setAmt)
+              get_user.save()
+
+          if setCategory == 'Miscellaneous':
+              get_user.miscellaneous = float(get_user.miscellaneous) + float(setAmt)
+              get_user.save()
+
+          new_setAside = SetAside.objects.create(username=username, category=setCategory,amount=setAmt)
+          new_setAside.save()
+          return redirect('setGoal')
+
+        if request.POST.get("addGoals"):
+            username = request.user
+            priority = request.POST.get("Priority")
+            if priority == "":
+              messages.error(request, "..Please enter your priority.")
+              return redirect('budget')
+            goal_Name = request.POST.get("Goal Name")
+            if goal_Name == "":
+              messages.error(request, "..Please enter the name of your goal.")
+              return redirect('budget')
+            value = request.POST.get("Value")
+            if value == "":
+              messages.error(request, "..Please enter the value of your goal.")
+              return redirect('budget')
+            target_Duration = request.POST.get("Target Duration")
+            if target_Duration == "":
+              messages.error(request, "..Please enter the duration of your goal.")
+              return redirect('budget')
+
+            if target_Duration.isdigit() == False:
+              messages.error(request, "Please enter in the target duration in integer only.")
+              return redirect('budget')
+
+            get_user.leftOver = float(get_user.net_worth) 
+            - float(get_user.dividends) - float(get_user.interest) - float(get_user.food) 
+            - float(get_user.housing) - float(get_user.transportation) - float(get_user.utilities)
+            - float(get_user.insurance) - float(get_user.medical) - float(get_user.personal)
+            - float(get_user.recreational) - float(get_user.miscellaneous)
+
+            get_user.goalPrice = float(value)/float(target_Duration)
+
+
+            if get_user.leftOver/30 < get_user.goalPrice:
+              remarks = "It is not possible to achieve this goal, please delete this goal and choose wisely"
+            else:
+              remarks = "You must save up $" + str(round(get_user.goalPrice*30,2)) + " per month or $" + str(round(get_user.goalPrice,2)) + " per day."
+            
+        new_budget = Budget.objects.create(
+            username=username, priority=priority, goal_Name=goal_Name, value=value, target_Duration=target_Duration,remarks = remarks)
+        new_budget.save()
+
+
+    queryset = SetAside.objects.filter(username=request.user)
+    b=Budget.objects.filter(username=request.user)
+
+    context = {
+      "Oobject_list": queryset,
+      "Object_list": b
+    }
+    return render(request, "SetGoals.html", context)
+
+  else:
+    return redirect('Login-page')
 
 
 # Account Verification / Creation Views
@@ -547,6 +930,10 @@ def Register(request):
     Email = request.POST.get("email")
     Password1 = request.POST.get("password1")
     Password2 = request.POST.get("password2")
+
+    if Username == "" or FirstName == "" or LastName == "" or Email == "" or Password1 == "" or Password2 == "":
+      messages.error(request, "Please fill in all fields.")
+      return redirect('Reg')
 
     if Password1 != Password2:
       messages.error(request, "Password are different")
@@ -606,6 +993,9 @@ def Login(request):
           messages.error(request, "Wrong Password Entered.")
           return redirect('Login-page')
       else:
+        if username == "":
+          messages.error(request, "Please fill in all fields.")
+          return redirect('Login-page')
         messages.error(request, "User does not exist.")
         return redirect('Login-page')
 

@@ -15,8 +15,8 @@
     </div>
     <div class="card-body">
         <div class="table-responsive">
-            {% if object_list %}
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            {% if Oobject_list %}
+            <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
                 <thead>
                     <tr>
                       <th>Category</th>
@@ -33,12 +33,9 @@
                     </tr>
                 </tfoot> -->
                 <tbody>
-                    {% for instance in object_list %}
+                    {% for instance in Oobject_list %}
                         <tr>
-                            <td>{{ instance.date }} </td>
-                            <td><a href='{{ instance.get_absolute_url }}'> {{ instance.transaction_name }} </a></td>
-                            <td>{{ instance.remarks }} </td>
-                            <td>{{ instance.category }} </td>
+                            <td><a href='{{ instance.get_absolute_urlss }}'> {{ instance.category }} </a> </td>
                             <td>{{ instance.amount }} </td>
                         </tr>
                     {% endfor %}
@@ -47,11 +44,58 @@
             {% else %}
             <h1>No Information Recorded</h1>
             {% endif %}
+            <div class="col-lg-6">
+        <div class="card shadow mb-4">
+          <div class="card-body text-center">
+            <button class="btn btn-primary btn-block" type="button" name="addAside" value="1"data-toggle="modal"
+              data-target="#setModal">Add Set Aside</button>
+            <div class="modal fade" id="setModal" tabindex="-1" role="dialog"
+              aria-labelledby="myLargeModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Add Set Aside</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <form action="" method='POST'>
+                      {% csrf_token %}
+                      <div class="form-group">
+                        <select class="form-control form-control-lg" id="setCategory" name="SetCategory" required>
+                          <option value="" disabled selected>Category</option>
+                          <option>Dividends</option>
+                          <option>Interest</option>
+                          <option>Food</option>
+                          <option>Housing</option>
+                          <option>Transportation</option>
+                          <option>Utilities</option>
+                          <option>Insurance</option>
+                          <option>Medical</option>
+                          <option>Personal</option>
+                          <option>Recreational</option>
+                          <option>Miscellaneous</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <input type="text" class="form-control form-control-lg" id="setAmt"
+                          name="SetAmt" placeholder="Set Amount" required>
+                      </div>
+                      <button class="btn btn-primary" type="submit" name="addNewSetAside" value="1">Add</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-
+      </div>
+        </div>
     </div>
 
 </div>
+
 <div class = "column">
 <div class="card shadow mb-4">
     <div class="card-header py-3">
@@ -60,7 +104,7 @@
 
     <div class="card-body">
         <div class="table-responsive">
-            {% if object_list %}
+            {% if Object_list %}
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                     <tr>
@@ -78,13 +122,10 @@
                     </tr>
                 </tfoot> -->
                 <tbody>
-                    {% for instance in object_list %}
+                    {% for instance in Object_list %}
                         <tr>
-                            <td>{{ instance.date }} </td>
-                            <td><a href='{{ instance.get_absolute_url }}'> {{ instance.transaction_name }} </a></td>
+                            <td>{{ instance.goal_Name }} </td>
                             <td>{{ instance.remarks }} </td>
-                            <td>{{ instance.category }} </td>
-                            <td>{{ instance.amount }} </td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -92,14 +133,14 @@
             {% else %}
             <h1>No Information Recorded</h1>
             {% endif %}
-            <div class="col-lg-7" style="float: right;">
+            <!-- <div class="col-lg-7" style="float: right;">
         <div class="card shadow mb-4">
           <div class="card-body text-center">
             <a class="btn btn-primary btn-block" type="button" data-toggle="modal"
-              data-target="#transactionModal">Edit/Add Goal</a>
+              data-target="#transactionModal">View All</a>
           </div>
         </div>
-      </div>
+      </div> -->
         </div>
 
     </div>
@@ -162,5 +203,114 @@
 
     </div>
 </div>
-</div>
+<div class="col-xl-12 col-lg-7">
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Set goal(s) and Tree Financial Tracker will do the rest for you</h6>
+    </div>
+    
+    <div class="card-body">
+        <div class="table-responsive">
+           {% if messages %}
+          {% for message in messages %}
+          {% if message.tags == 'error' %}
+          <h2 style='color:red;'> {{message}}</h2>
+          {% else %}
+          <h2 style='color:green;'> {{message}}</h2>
+          {% endif %}
+          {% endfor %}
+          {% endif %}
+            {% if Object_list %}
+            <table class="table table-bordered" id="dataTable1" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                      <tr>
+                      <th>Priority</th>
+                      <th>Goal Name</th>
+                      <th>Value</th>
+                      <th>Target Duration</th>
+                    </tr>
+                    </tr>
+                </thead>
+                <!-- <tfoot>
+                    <tr>
+                      <th>Date</th>
+                      <th>Transaction Name</th>
+                      <th>Remarks</th>
+                      <th>Category</th>
+                      <th>Amount</th>
+                    </tr>
+                </tfoot> -->
+                <tbody>
+                    {% for instance in Object_list %}
+                        <tr>
+                            <td>{{ instance.priority }} </td>
+                            <td><a href='{{ instance.get_absolute_urls }}'> {{ instance.goal_Name }} </a></td>
+                            <td>{{ instance.value }} </td>
+                            <td>{{ instance.target_Duration }} </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <h1>No Information Recorded</h1>
+            {% endif %}
+            <div class="col-lg-6">
+            <div class="card shadow mb-4">
+              <div class="card-body text-center">
+                <button class="btn btn-primary btn-block" type="button" name="addGoal" value="1"data-toggle="modal"
+                  data-target="#GoalModal">Add Goals</button>
+                <div class="modal fade" id="GoalModal" tabindex="-1" role="dialog"
+                  aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">Add Goals</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <form action="" method='POST'>
+                          {% csrf_token %}
+                          <div class="form-group">
+                            <input type="text" class="form-control form-control-lg" id="Priority"
+                              name="Priority" placeholder="Priority" required>
+                          </div>
+                          <div class="form-group">
+                            <input type="text" class="form-control form-control-lg" id="Value"
+                              name="Value" placeholder="Value" required>
+                          </div>
+                          <div class="form-group">
+                            <input type="text" class="form-control form-control-lg" id="Goal Name"
+                              name="Goal Name" placeholder="Goal Name" required>
+                          </div>
+                          <div class="form-group">
+                            <input type="text" class="form-control form-control-lg" id="Target Duration"
+                              name="Target Duration" placeholder="Target Duration" required>
+                          </div>
+                          <button class="btn btn-primary" type="submit" name="addGoals" value="1">Add New Goals</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+        <!-- <div class="col-lg-9" style="float: right;">
+            <div class="card shadow mb-4">
+              <div class="card-body text-center"  >
+                <a class="btn btn-primary btn-block" type="button" data-toggle="modal"
+                  data-target="#transactionModal">Add</a>
+              </div>
+            </div>
+          </div> -->
+            </div>
+
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+
+
+
 {% endblock %}

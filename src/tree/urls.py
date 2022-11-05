@@ -35,8 +35,10 @@ urlpatterns = [
     path("transactions/<int:id>/", transaction_lookup_view, name="detailed_transaction"), 
 
     path("budgetFinancial/",budget_view,name="budget"), 
-    path("budgetFinancial/<int:id>/",budget_lookup_view,name="detailed_budget"), 
-    path("setGoals/",set_goals,name="setGoal"), 
+    path("budgetFinancial/<int:id>/",budget_lookup_view,name="detailed_budget"),
+
+    path("setGoals/", set_goals, name="setGoal"),  
+    path("setGoals/<int:id>/", set_aside_view, name="setAside"),
 
     # Account Verification / Creation Views
     path("registerYourAccount/", Register, name="Reg"), #register acct page

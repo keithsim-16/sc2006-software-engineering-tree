@@ -71,12 +71,26 @@
                                             <div class="card-body text-center">
                                                 <button class="btn btn-primary btn-block" type="submit" data-toggle="modal"
                                                 data-target="#exampleModalLg">Add New Goal</button>
-        
-
                                             </div>
                                         </div>
                                     </div>
+                                    
                 </form>
+                    
+              <div class="col-lg-8">
+              <div class="card shadow mb-4">
+                <div class="card-body text-center">
+                  <!--<a href="/home">-->
+                  <form action="" method='POST'>
+                    {% csrf_token %}
+                    <button class="btn btn-primary btn-block" type="submit" data-target="#exampleModalLg"
+                      name="completeBudgetInit" value="1">Complete</button>
+                  </form>
+                  <!-- </a>-->
+                </div>
+              </div>
+            </div>
+            </div>
             </div>
         <!-- <div class="col-lg-6">
             <div class="card shadow mb-4">

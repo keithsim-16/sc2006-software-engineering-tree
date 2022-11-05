@@ -84,12 +84,12 @@
     </div>
 
     <!-- Current Month Income -->
-    <div class="card {% if cashflow < 0 %} border-left-danger {% else %} border-left-success {% endif %} shadow mb-4 py-2">
+    <div class="card {% if cashflow < 0 %} border-left-danger {% elif cashflow == 0 %} border-left-primary {% else %} border-left-success {% endif %} shadow mb-4 py-2">
       <!-- replace border-left-primary with border-left-danger(red) border-left-success(green) -->
       <div class="card-body">
         <div class="row no-gutters align-items-center">
           <div class="col mr-2">
-            <div class="text-xs font-weight-bold {% if cashflow < 0 %} text-danger {% else %} text-success {% endif %} text-uppercase mb-1">
+            <div class="text-xs font-weight-bold {% if cashflow < 0 %} text-danger {% elif cashflow == 0 %} text-primary {% else %} text-success {% endif %} text-uppercase mb-1">
               <!-- replace text-primary with text-danger(red) text-success(green) -->
               This Month ({{currmonth}})
             </div>

@@ -23,7 +23,7 @@ class dataGovAPI():
                 ("resourceID", resourceID)]))
         return resourceIDs
 
-    def getDatasetID(id):
+    def getDatasetID(self, id):
         url = "https://data.gov.sg/api/action/"
         listOfDataSets = ["average-retail-prices-of-selected-items-annual",
                           "tax-rates-for-individual-income-tax",
@@ -37,7 +37,7 @@ class dataGovAPI():
         size = responseJson["result"]["resources"][0]["fields"][0]["total"]
         return resourceID, size
 
-    def getDataset(datasetID, limit=0):
+    def getDataset(self, datasetID, limit=0):
         url = "https://data.gov.sg/api/action/"
         response = requests.get(
             url+"datastore_search",
