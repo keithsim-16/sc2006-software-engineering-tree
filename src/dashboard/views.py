@@ -9,7 +9,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
 from dateutil.relativedelta import relativedelta
 
-from .controllers import dataGovAPI
 
 # Logged in Views
 def home_view(request, *args, **kwargs):
@@ -19,7 +18,6 @@ def home_view(request, *args, **kwargs):
       return redirect('set-up')
 
     transactionhistory = Transaction.objects.filter(username=request.user).order_by('date')
-    print(transactionhistory)
     if transactionhistory.exists():
       earliest_month=transactionhistory[0].date
       firstofthismonth=datetime.now().replace(day=1)
