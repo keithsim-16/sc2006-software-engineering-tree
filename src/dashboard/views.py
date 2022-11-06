@@ -1843,7 +1843,7 @@ def set_goals(request):
     new_setAside = SetAside.objects.create(username=username, category="Miscellaneous",amount=avgMiscellaneous)
     new_setAside.save()
     
-
+    itemsWithinBudget = getDataByPrice(request)
 
     if request.method == "POST":
         get_user = User.objects.get(username=request.user)
@@ -1883,7 +1883,7 @@ def set_goals(request):
               remarks = "It is not possible to achieve this goal, please delete this goal and choose wisely"
             else:
               remarks = "You must save up $" + str(round(get_user.goalPrice*30,2)) + " per month or $" + str(round(get_user.goalPrice,2)) + " per day."
-            
+          
         new_budget = Budget.objects.create(
             username=username, priority=priority, goal_Name=goal_Name, value=value, target_Duration=target_Duration,remarks = remarks, per_month=round(get_user.goalPrice*30,2))
         new_budget.save()
@@ -1894,12 +1894,33 @@ def set_goals(request):
 
     context = {
       "Oobject_list": queryset,
-      "Object_list": b
+      "Object_list": b,
+      "itemsWithinBudget" : itemsWithinBudget,
     }
     return render(request, "SetGoals.html", context)
 
   else:
     return redirect('Login-page')
+
+def getDataByPrice(request):
+  b = Budget.objects.filter(username=request.user)
+  maxValue = 0
+  for instance in b:
+    maxValue = max(instance.per_month/30, maxValue)
+    print(instance.per_month)
+  
+  print(maxValue)
+  imported = dataGovAPI()
+  datasetid, size = imported.getDatasetID(0)
+  dataset = imported.getDataset(datasetid,size)['result']['records']
+  # print(dataset['result']['records'][1]['value'])
+  updatedDB = []
+  for data in dataset:
+    if (data['value'] != 'na') and float(data['value']) <= maxValue:
+      updatedDB.append(data)
+  print(updatedDB)
+  return updatedDB
+
 
 
 # Account Verification / Creation Views
