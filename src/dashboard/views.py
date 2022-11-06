@@ -503,6 +503,510 @@ def budget_setup_view(request, *args, **kwargs):
           username=username, priority=priority, goal_Name=goal_Name, value=value, target_Duration=target_Duration,remarks = remarks)
       new_budget.save()
 
+      username = request.user
+      food_list = [0,0,0,0,0,0,0,0,0,0,0,0]
+      housing_list = [0,0,0,0,0,0,0,0,0,0,0,0]
+      transportation_list = [0,0,0,0,0,0,0,0,0,0,0,0]
+      utilities_list = [0,0,0,0,0,0,0,0,0,0,0,0]
+      insurance_list = [0,0,0,0,0,0,0,0,0,0,0,0]
+      medical_list = [0,0,0,0,0,0,0,0,0,0,0,0]
+      personal_list = [0,0,0,0,0,0,0,0,0,0,0,0]
+      recreational_list = [0,0,0,0,0,0,0,0,0,0,0,0]
+      miscellaneous_list = [0,0,0,0,0,0,0,0,0,0,0,0]
+
+      count=0
+      hcount=0
+      tcount=0
+      ucount=0
+      icount=0
+      mcount=0
+      pcount=0
+      rcount=0
+      micount=0
+
+      if request.user.is_authenticated:
+        q = Transaction.objects.filter(username=request.user)
+        for instance in q:
+          if instance.date.month == 1 and instance.category == "Food":
+            food_list[0]= food_list[0] + instance.amount 
+
+          if instance.date.month == 2 and instance.category == "Food":
+            food_list[1]= food_list[1] + instance.amount 
+
+          if instance.date.month == 3 and instance.category == "Food":
+            food_list[2]= food_list[2] + instance.amount 
+
+          if instance.date.month == 4 and instance.category == "Food":
+            food_list[3]= food_list[3] + instance.amount 
+
+          if instance.date.month == 5 and instance.category == "Food":
+            food_list[4]= food_list[4] + instance.amount 
+
+          if instance.date.month == 6 and instance.category == "Food":
+            food_list[5]= food_list[5] + instance.amount 
+
+          if instance.date.month == 7 and instance.category == "Food":
+            food_list[6]= food_list[6] + instance.amount 
+
+          if instance.date.month == 8 and instance.category == "Food":
+            food_list[7]= food_list[7] + instance.amount 
+
+          if instance.date.month == 9 and instance.category == "Food":
+            food_list[8]= food_list[8] + instance.amount 
+
+          if instance.date.month == 10 and instance.category == "Food":
+            food_list[9]= food_list[9] + instance.amount 
+
+          if instance.date.month == 11 and instance.category == "Food":
+            food_list[10]= food_list[10] + instance.amount 
+
+          if instance.date.month == 12 and instance.category == "Food":
+            food_list[11]= food_list[11] + instance.amount 
+
+
+          # amount for housing
+          if instance.date.month == 1 and instance.category == "Housing":
+            housing_list[0]= housing_list[0] + instance.amount 
+
+          if instance.date.month == 2 and instance.category == "Housing":
+            housing_list[1]= housing_list[1] + instance.amount 
+
+          if instance.date.month == 3 and instance.category == "Housing":
+            housing_list[2]= housing_list[2] + instance.amount 
+
+          if instance.date.month == 4 and instance.category == "Housing":
+            housing_list[3]= housing_list[3] + instance.amount 
+
+          if instance.date.month == 5 and instance.category == "Housing":
+            housing_list[4]= housing_list[4] + instance.amount 
+
+          if instance.date.month == 6 and instance.category == "Housing":
+            housing_list[5]= housing_list[5] + instance.amount 
+
+          if instance.date.month == 7 and instance.category == "Housing":
+            housing_list[6]= housing_list[6] + instance.amount 
+
+          if instance.date.month == 8 and instance.category == "Housing":
+            housing_list[7]= housing_list[7] + instance.amount 
+
+          if instance.date.month == 9 and instance.category == "Housing":
+            housing_list[8]= housing_list[8] + instance.amount 
+
+          if instance.date.month == 10 and instance.category == "Housing":
+            housing_list[9]= housing_list[9] + instance.amount 
+
+          if instance.date.month == 11 and instance.category == "Housing":
+            housing_list[10]= housing_list[10] + instance.amount 
+
+          if instance.date.month == 12 and instance.category == "Housing":
+            housing_list[11]= housing_list[11] + instance.amount 
+
+          # amount for transportation
+          if instance.date.month == 1 and instance.category == "Transportation":
+            transportation_list[0]= transportation_list[0] + instance.amount 
+
+          if instance.date.month == 2 and instance.category == "Transportation":
+            transportation_list[1]= transportation_list[1] + instance.amount 
+
+          if instance.date.month == 3 and instance.category == "Transportation":
+            transportation_list[2]= transportation_list[2] + instance.amount 
+
+          if instance.date.month == 4 and instance.category == "Transportation":
+            transportation_list[3]= transportation_list[3] + instance.amount 
+
+          if instance.date.month == 5 and instance.category == "Transportation":
+            transportation_list[4]= transportation_list[4] + instance.amount 
+
+          if instance.date.month == 6 and instance.category == "Transportation":
+            transportation_list[5]= transportation_list[5] + instance.amount 
+
+          if instance.date.month == 7 and instance.category == "Transportation":
+            transportation_list[6]= transportation_list[6] + instance.amount 
+
+          if instance.date.month == 8 and instance.category == "Transportation":
+            transportation_list[7]= transportation_list[7] + instance.amount 
+
+          if instance.date.month == 9 and instance.category == "Transportation":
+            transportation_list[8]= transportation_list[8] + instance.amount 
+
+          if instance.date.month == 10 and instance.category == "Transportation":
+            transportation_list[9]= transportation_list[9] + instance.amount 
+
+          if instance.date.month == 11 and instance.category == "Transportation":
+            transportation_list[10]= transportation_list[10] + instance.amount 
+
+          if instance.date.month == 12 and instance.category == "Transportation":
+            transportation_list[11]= transportation_list[11] + instance.amount 
+
+          # amount for utilities
+          if instance.date.month == 1 and instance.category == "Utilities":
+            utilities_list[0]= utilities_list[0] + instance.amount 
+
+          if instance.date.month == 2 and instance.category == "Utilities":
+            utilities_list[1]= utilities_list[1] + instance.amount 
+
+          if instance.date.month == 3 and instance.category == "Utilities":
+            utilities_list[2]= utilities_list[2] + instance.amount 
+
+          if instance.date.month == 4 and instance.category == "Utilities":
+            utilities_list[3]= utilities_list[3] + instance.amount 
+
+          if instance.date.month == 5 and instance.category == "Utilities":
+            utilities_list[4]= utilities_list[4] + instance.amount 
+
+          if instance.date.month == 6 and instance.category == "Utilities":
+            utilities_list[5]= utilities_list[5] + instance.amount 
+
+          if instance.date.month == 7 and instance.category == "Utilities":
+            utilities_list[6]= utilities_list[6] + instance.amount 
+
+          if instance.date.month == 8 and instance.category == "Utilities":
+            utilities_list[7]= utilities_list[7] + instance.amount 
+
+          if instance.date.month == 9 and instance.category == "Utilities":
+            utilities_list[8]= utilities_list[8] + instance.amount 
+
+          if instance.date.month == 10 and instance.category == "Utilities":
+            utilities_list[9]= utilities_list[9] + instance.amount 
+
+          if instance.date.month == 11 and instance.category == "Utilities":
+            utilities_list[10]= utilities_list[10] + instance.amount 
+
+          if instance.date.month == 12 and instance.category == "Utilities":
+            utilities_list[11]= utilities_list[11] + instance.amount 
+
+          # amount for insurance
+          if instance.date.month == 1 and instance.category == "Insurance":
+            insurance_list[0]= insurance_list[0] + instance.amount 
+
+          if instance.date.month == 2 and instance.category == "Insurance":
+            insurance_list[1]= insurance_list[1] + instance.amount 
+
+          if instance.date.month == 3 and instance.category == "Insurance":
+            insurance_list[2]= insurance_list[2] + instance.amount 
+
+          if instance.date.month == 4 and instance.category == "Insurance":
+            insurance_list[3]= insurance_list[3] + instance.amount 
+
+          if instance.date.month == 5 and instance.category == "Insurance":
+            insurance_list[4]= insurance_list[4] + instance.amount 
+
+          if instance.date.month == 6 and instance.category == "Insurance":
+            insurance_list[5]= insurance_list[5] + instance.amount 
+
+          if instance.date.month == 7 and instance.category == "Insurance":
+            insurance_list[6]= insurance_list[6] + instance.amount 
+
+          if instance.date.month == 8 and instance.category == "Insurance":
+            insurance_list[7]= insurance_list[7] + instance.amount 
+
+          if instance.date.month == 9 and instance.category == "Insurance":
+            insurance_list[8]= insurance_list[8] + instance.amount 
+
+          if instance.date.month == 10 and instance.category == "Insurance":
+            insurance_list[9]= insurance_list[9] + instance.amount 
+
+          if instance.date.month == 11 and instance.category == "Insurance":
+            insurance_list[10]= insurance_list[10] + instance.amount 
+
+          if instance.date.month == 12 and instance.category == "Insurance":
+            insurance_list[11]= insurance_list[11] + instance.amount
+        
+
+          # amount for medical
+          if instance.date.month == 1 and instance.category == "Medical":
+            medical_list[0]= medical_list[0] + instance.amount 
+
+          if instance.date.month == 2 and instance.category == "Medical":
+            medical_list[1]= medical_list[1] + instance.amount 
+
+          if instance.date.month == 3 and instance.category == "Medical":
+            medical_list[2]= medical_list[2] + instance.amount 
+
+          if instance.date.month == 4 and instance.category == "Medical":
+            medical_list[3]= medical_list[3] + instance.amount 
+
+          if instance.date.month == 5 and instance.category == "Medical":
+            medical_list[4]= medical_list[4] + instance.amount 
+
+          if instance.date.month == 6 and instance.category == "Medical":
+            medical_list[5]= medical_list[5] + instance.amount 
+
+          if instance.date.month == 7 and instance.category == "Medical":
+            medical_list[6]= medical_list[6] + instance.amount 
+
+          if instance.date.month == 8 and instance.category == "Medical":
+            medical_list[7]= medical_list[7] + instance.amount 
+
+          if instance.date.month == 9 and instance.category == "Medical":
+            medical_list[8]= medical_list[8] + instance.amount 
+
+          if instance.date.month == 10 and instance.category == "Medical":
+            medical_list[9]= medical_list[9] + instance.amount 
+
+          if instance.date.month == 11 and instance.category == "Medical":
+            medical_list[10]= medical_list[10] + instance.amount 
+
+          if instance.date.month == 12 and instance.category == "Medical":
+            medical_list[11]= medical_list[11] + instance.amount
+
+
+          # amount for personal
+          if instance.date.month == 1 and instance.category == "Personal":
+            personal_list[0]= personal_list[0] + instance.amount 
+
+          if instance.date.month == 2 and instance.category == "Personal":
+            personal_list[1]= personal_list[1] + instance.amount 
+
+          if instance.date.month == 3 and instance.category == "Personal":
+            personal_list[2]= personal_list[2] + instance.amount 
+
+          if instance.date.month == 4 and instance.category == "Personal":
+            personal_list[3]= personal_list[3] + instance.amount 
+
+          if instance.date.month == 5 and instance.category == "Personal":
+            personal_list[4]= personal_list[4] + instance.amount 
+
+          if instance.date.month == 6 and instance.category == "Personal":
+            personal_list[5]= personal_list[5] + instance.amount 
+
+          if instance.date.month == 7 and instance.category == "Personal":
+            personal_list[6]= personal_list[6] + instance.amount 
+
+          if instance.date.month == 8 and instance.category == "Personal":
+            personal_list[7]= personal_list[7] + instance.amount 
+
+          if instance.date.month == 9 and instance.category == "Personal":
+            personal_list[8]= personal_list[8] + instance.amount 
+
+          if instance.date.month == 10 and instance.category == "Personal":
+            personal_list[9]= personal_list[9] + instance.amount 
+
+          if instance.date.month == 11 and instance.category == "Personal":
+            personal_list[10]= personal_list[10] + instance.amount 
+
+          if instance.date.month == 12 and instance.category == "Personal":
+            personal_list[11]= personal_list[11] + instance.amount
+
+
+          # amount for recreational
+          if instance.date.month == 1 and instance.category == "Recreational":
+            recreational_list[0]= recreational_list[0] + instance.amount 
+
+          if instance.date.month == 2 and instance.category == "Recreational":
+            recreational_list[1]= recreational_list[1] + instance.amount 
+
+          if instance.date.month == 3 and instance.category == "Recreational":
+            recreational_list[2]= recreational_list[2] + instance.amount 
+
+          if instance.date.month == 4 and instance.category == "Recreational":
+            recreational_list[3]= recreational_list[3] + instance.amount 
+
+          if instance.date.month == 5 and instance.category == "Recreational":
+            recreational_list[4]= recreational_list[4] + instance.amount 
+
+          if instance.date.month == 6 and instance.category == "Recreational":
+            recreational_list[5]= recreational_list[5] + instance.amount 
+
+          if instance.date.month == 7 and instance.category == "Recreational":
+            recreational_list[6]= recreational_list[6] + instance.amount 
+
+          if instance.date.month == 8 and instance.category == "Recreational":
+            recreational_list[7]= recreational_list[7] + instance.amount 
+
+          if instance.date.month == 9 and instance.category == "Recreational":
+            recreational_list[8]= recreational_list[8] + instance.amount 
+
+          if instance.date.month == 10 and instance.category == "Recreational":
+            recreational_list[9]= recreational_list[9] + instance.amount 
+
+          if instance.date.month == 11 and instance.category == "Recreational":
+            recreational_list[10]= recreational_list[10] + instance.amount 
+
+          if instance.date.month == 12 and instance.category == "Recreational":
+            recreational_list[11]= recreational_list[11] + instance.amount
+
+
+          # amount for miscellaneous
+          if instance.date.month == 1 and instance.category == "Miscellaneous":
+            miscellaneous_list[0]= miscellaneous_list[0] + instance.amount 
+
+          if instance.date.month == 2 and instance.category == "Miscellaneous":
+            miscellaneous_list[1]= miscellaneous_list[1] + instance.amount 
+
+          if instance.date.month == 3 and instance.category == "Miscellaneous":
+            miscellaneous_list[2]= miscellaneous_list[2] + instance.amount 
+
+          if instance.date.month == 4 and instance.category == "Miscellaneous":
+            miscellaneous_list[3]= miscellaneous_list[3] + instance.amount 
+
+          if instance.date.month == 5 and instance.category == "Miscellaneous":
+            miscellaneous_list[4]= miscellaneous_list[4] + instance.amount 
+
+          if instance.date.month == 6 and instance.category == "Miscellaneous":
+            miscellaneous_list[5]= miscellaneous_list[5] + instance.amount 
+
+          if instance.date.month == 7 and instance.category == "Miscellaneous":
+            miscellaneous_list[6]= miscellaneous_list[6] + instance.amount 
+
+          if instance.date.month == 8 and instance.category == "Miscellaneous":
+            miscellaneous_list[7]= miscellaneous_list[7] + instance.amount 
+
+          if instance.date.month == 9 and instance.category == "Miscellaneous":
+            miscellaneous_list[8]= miscellaneous_list[8] + instance.amount 
+
+          if instance.date.month == 10 and instance.category == "Miscellaneous":
+            miscellaneous_list[9]= miscellaneous_list[9] + instance.amount 
+
+          if instance.date.month == 11 and instance.category == "Miscellaneous":
+            miscellaneous_list[10]= miscellaneous_list[10] + instance.amount 
+
+          if instance.date.month == 12 and instance.category == "Miscellaneous":
+            miscellaneous_list[11]= miscellaneous_list[11] + instance.amount
+
+
+        for i in food_list:
+          if i != 0:
+            count=count+1
+
+        for i in housing_list:
+          if i != 0:
+            hcount=hcount+1
+
+        for i in transportation_list:
+          if i != 0:
+            tcount=tcount+1
+
+        for i in utilities_list:
+          if i != 0:
+            ucount=ucount+1
+
+        for i in insurance_list:
+          if i != 0:
+            icount=icount+1
+
+        for i in medical_list:
+          if i != 0:
+            mcount=mcount+1
+
+        for i in personal_list:
+          if i != 0:
+            pcount=pcount+1
+
+        for i in recreational_list:
+          if i != 0:
+            rcount=rcount+1
+
+        for i in miscellaneous_list:
+          if i != 0:
+            micount=micount+1
+
+        sumFood=0
+        sumHousing=0
+        sumTransportation=0
+        sumUtilities=0
+        sumInsurance=0
+        sumMedical=0
+        sumPersonal=0
+        sumRecreational=0
+        sumMiscellaneous=0
+
+        avgFood=0
+        avgHousing=0
+        avgTransportation=0
+        avgUtilities=0
+        avgInsurance=0
+        avgMedical=0
+        avgPersonal=0
+        avgRecreational=0
+        avgMiscellaneous=0
+
+        for i in food_list:
+          sumFood=sumFood+i
+
+        for i in housing_list:
+          sumHousing=sumHousing+i
+
+        for i in transportation_list:
+          sumTransportation=sumTransportation+i
+
+        for i in utilities_list:
+          sumUtilities=sumUtilities+i
+
+        for i in insurance_list:
+          sumInsurance=sumInsurance+i
+
+        for i in medical_list:
+          sumMedical=sumMedical+i
+
+        for i in personal_list:
+          sumPersonal=sumPersonal+i
+
+        for i in recreational_list:
+          sumRecreational=sumRecreational+i
+
+        for i in miscellaneous_list:
+          sumMiscellaneous=sumMiscellaneous+i
+
+        if count ==0:
+          avgFood = sumFood/1
+        else:
+          avgFood = sumFood/count
+        if hcount ==0:
+          avgHousing = sumHousing/1
+        else:
+          avgHousing = sumHousing/hcount
+        if tcount == 0:
+          avgTransportation = sumTransportation/1
+        else:
+          avgTransportation = sumTransportation/tcount
+        if ucount == 0:
+          avgUtilities = sumUtilities/1
+        else:  
+          avgUtilities = sumUtilities/ucount
+        if icount == 0:
+          avgInsurance = sumInsurance/1
+        else:
+          avgInsurance = sumInsurance/icount
+        if mcount ==0:
+          avgMedical = sumMedical/1
+        else:
+          avgMedical = sumMedical/mcount
+        if pcount ==0:
+          avgPersonal = sumPersonal/1
+        else:
+          avgPersonal = sumPersonal/pcount
+        if rcount ==0:
+          avgRecreational = sumRecreational/1
+        else:
+          avgRecreational = sumRecreational/rcount
+        if micount == 0:
+          avgMiscellaneous = sumMiscellaneous/1
+        else:
+          avgMiscellaneous = sumMiscellaneous/micount
+
+        queryset = SetAside.objects.filter(username=request.user)
+        queryset.delete()
+
+        new_setAside = SetAside.objects.create(username=username, category="Food",amount=avgFood)
+        
+        new_setAside = SetAside.objects.create(username=username, category="Housing",amount=avgHousing)
+        
+        new_setAside = SetAside.objects.create(username=username, category="Transportation",amount=avgTransportation)
+        
+        new_setAside = SetAside.objects.create(username=username, category="Utilities",amount=avgUtilities)
+        
+        new_setAside = SetAside.objects.create(username=username, category="Insurance",amount=avgInsurance)
+        
+        new_setAside = SetAside.objects.create(username=username, category="Medical",amount=avgMedical)
+       
+        new_setAside = SetAside.objects.create(username=username, category="Personal",amount=avgPersonal)
+        
+        new_setAside = SetAside.objects.create(username=username, category="Recreational",amount=avgRecreational)
+        
+        new_setAside = SetAside.objects.create(username=username, category="Miscellaneous",amount=avgMiscellaneous)
+        new_setAside.save()
+
       return redirect('budget')
 
     queryset = Budget.objects.filter(username=request.user)
@@ -534,6 +1038,7 @@ def budget_lookup_view(request, id):
   # Check if user is logged in
   if request.user.is_authenticated:
     # Edit transaction
+    get_user = User.objects.get(username=request.user)
     if request.method == "POST":
       # Edit Goal Button
       if request.POST.get("editGoal"):
@@ -550,6 +1055,20 @@ def budget_lookup_view(request, id):
         budget.value = value
         budget.target_Duration = target_Duration
         budget.save()
+
+        get_user.leftOver = float(get_user.net_worth)
+
+        get_user.goalPrice = float(value)/float(target_Duration)
+
+
+        if get_user.leftOver/30 < get_user.goalPrice:
+          remarks = "It is not possible to achieve this goal, please delete this goal and choose wisely"
+        else:
+          remarks = "You must save up $" + str(round(get_user.goalPrice*30,2)) + " per month or $" + str(round(get_user.goalPrice,2)) + " per day."
+            
+        new_budget = Budget.objects.get(username=username)
+        new_budget.remarks = remarks
+        new_budget.save()
 
       # Delete Goal
       elif request.POST.get("delGoal"):
@@ -799,68 +1318,573 @@ def set_aside_view(request,id):
 
 
 def set_goals(request):
+  username = request.user
+  food_list = [0,0,0,0,0,0,0,0,0,0,0,0]
+  housing_list = [0,0,0,0,0,0,0,0,0,0,0,0]
+  transportation_list = [0,0,0,0,0,0,0,0,0,0,0,0]
+  utilities_list = [0,0,0,0,0,0,0,0,0,0,0,0]
+  insurance_list = [0,0,0,0,0,0,0,0,0,0,0,0]
+  medical_list = [0,0,0,0,0,0,0,0,0,0,0,0]
+  personal_list = [0,0,0,0,0,0,0,0,0,0,0,0]
+  recreational_list = [0,0,0,0,0,0,0,0,0,0,0,0]
+  miscellaneous_list = [0,0,0,0,0,0,0,0,0,0,0,0]
+
+  count=0
+  hcount=0
+  tcount=0
+  ucount=0
+  icount=0
+  mcount=0
+  pcount=0
+  rcount=0
+  micount=0
+
   if request.user.is_authenticated:
+    q = Transaction.objects.filter(username=request.user)
+    for instance in q:
+      if instance.date.month == 1 and instance.category == "Food":
+        food_list[0]= food_list[0] + instance.amount 
+
+      if instance.date.month == 2 and instance.category == "Food":
+        food_list[1]= food_list[1] + instance.amount 
+
+      if instance.date.month == 3 and instance.category == "Food":
+        food_list[2]= food_list[2] + instance.amount 
+
+      if instance.date.month == 4 and instance.category == "Food":
+        food_list[3]= food_list[3] + instance.amount 
+
+      if instance.date.month == 5 and instance.category == "Food":
+        food_list[4]= food_list[4] + instance.amount 
+
+      if instance.date.month == 6 and instance.category == "Food":
+        food_list[5]= food_list[5] + instance.amount 
+
+      if instance.date.month == 7 and instance.category == "Food":
+        food_list[6]= food_list[6] + instance.amount 
+
+      if instance.date.month == 8 and instance.category == "Food":
+        food_list[7]= food_list[7] + instance.amount 
+
+      if instance.date.month == 9 and instance.category == "Food":
+        food_list[8]= food_list[8] + instance.amount 
+
+      if instance.date.month == 10 and instance.category == "Food":
+        food_list[9]= food_list[9] + instance.amount 
+
+      if instance.date.month == 11 and instance.category == "Food":
+        food_list[10]= food_list[10] + instance.amount 
+
+      if instance.date.month == 12 and instance.category == "Food":
+        food_list[11]= food_list[11] + instance.amount 
+
+
+      # amount for housing
+      if instance.date.month == 1 and instance.category == "Housing":
+        housing_list[0]= housing_list[0] + instance.amount 
+
+      if instance.date.month == 2 and instance.category == "Housing":
+        housing_list[1]= housing_list[1] + instance.amount 
+
+      if instance.date.month == 3 and instance.category == "Housing":
+        housing_list[2]= housing_list[2] + instance.amount 
+
+      if instance.date.month == 4 and instance.category == "Housing":
+        housing_list[3]= housing_list[3] + instance.amount 
+
+      if instance.date.month == 5 and instance.category == "Housing":
+        housing_list[4]= housing_list[4] + instance.amount 
+
+      if instance.date.month == 6 and instance.category == "Housing":
+        housing_list[5]= housing_list[5] + instance.amount 
+
+      if instance.date.month == 7 and instance.category == "Housing":
+        housing_list[6]= housing_list[6] + instance.amount 
+
+      if instance.date.month == 8 and instance.category == "Housing":
+        housing_list[7]= housing_list[7] + instance.amount 
+
+      if instance.date.month == 9 and instance.category == "Housing":
+        housing_list[8]= housing_list[8] + instance.amount 
+
+      if instance.date.month == 10 and instance.category == "Housing":
+        housing_list[9]= housing_list[9] + instance.amount 
+
+      if instance.date.month == 11 and instance.category == "Housing":
+        housing_list[10]= housing_list[10] + instance.amount 
+
+      if instance.date.month == 12 and instance.category == "Housing":
+        housing_list[11]= housing_list[11] + instance.amount 
+
+      # amount for transportation
+      if instance.date.month == 1 and instance.category == "Transportation":
+        transportation_list[0]= transportation_list[0] + instance.amount 
+
+      if instance.date.month == 2 and instance.category == "Transportation":
+        transportation_list[1]= transportation_list[1] + instance.amount 
+
+      if instance.date.month == 3 and instance.category == "Transportation":
+        transportation_list[2]= transportation_list[2] + instance.amount 
+
+      if instance.date.month == 4 and instance.category == "Transportation":
+        transportation_list[3]= transportation_list[3] + instance.amount 
+
+      if instance.date.month == 5 and instance.category == "Transportation":
+        transportation_list[4]= transportation_list[4] + instance.amount 
+
+      if instance.date.month == 6 and instance.category == "Transportation":
+        transportation_list[5]= transportation_list[5] + instance.amount 
+
+      if instance.date.month == 7 and instance.category == "Transportation":
+        transportation_list[6]= transportation_list[6] + instance.amount 
+
+      if instance.date.month == 8 and instance.category == "Transportation":
+        transportation_list[7]= transportation_list[7] + instance.amount 
+
+      if instance.date.month == 9 and instance.category == "Transportation":
+        transportation_list[8]= transportation_list[8] + instance.amount 
+
+      if instance.date.month == 10 and instance.category == "Transportation":
+        transportation_list[9]= transportation_list[9] + instance.amount 
+
+      if instance.date.month == 11 and instance.category == "Transportation":
+        transportation_list[10]= transportation_list[10] + instance.amount 
+
+      if instance.date.month == 12 and instance.category == "Transportation":
+        transportation_list[11]= transportation_list[11] + instance.amount 
+
+      # amount for utilities
+      if instance.date.month == 1 and instance.category == "Utilities":
+        utilities_list[0]= utilities_list[0] + instance.amount 
+
+      if instance.date.month == 2 and instance.category == "Utilities":
+        utilities_list[1]= utilities_list[1] + instance.amount 
+
+      if instance.date.month == 3 and instance.category == "Utilities":
+        utilities_list[2]= utilities_list[2] + instance.amount 
+
+      if instance.date.month == 4 and instance.category == "Utilities":
+        utilities_list[3]= utilities_list[3] + instance.amount 
+
+      if instance.date.month == 5 and instance.category == "Utilities":
+        utilities_list[4]= utilities_list[4] + instance.amount 
+
+      if instance.date.month == 6 and instance.category == "Utilities":
+        utilities_list[5]= utilities_list[5] + instance.amount 
+
+      if instance.date.month == 7 and instance.category == "Utilities":
+        utilities_list[6]= utilities_list[6] + instance.amount 
+
+      if instance.date.month == 8 and instance.category == "Utilities":
+        utilities_list[7]= utilities_list[7] + instance.amount 
+
+      if instance.date.month == 9 and instance.category == "Utilities":
+        utilities_list[8]= utilities_list[8] + instance.amount 
+
+      if instance.date.month == 10 and instance.category == "Utilities":
+        utilities_list[9]= utilities_list[9] + instance.amount 
+
+      if instance.date.month == 11 and instance.category == "Utilities":
+        utilities_list[10]= utilities_list[10] + instance.amount 
+
+      if instance.date.month == 12 and instance.category == "Utilities":
+        utilities_list[11]= utilities_list[11] + instance.amount 
+
+      # amount for insurance
+      if instance.date.month == 1 and instance.category == "Insurance":
+        insurance_list[0]= insurance_list[0] + instance.amount 
+
+      if instance.date.month == 2 and instance.category == "Insurance":
+        insurance_list[1]= insurance_list[1] + instance.amount 
+
+      if instance.date.month == 3 and instance.category == "Insurance":
+        insurance_list[2]= insurance_list[2] + instance.amount 
+
+      if instance.date.month == 4 and instance.category == "Insurance":
+        insurance_list[3]= insurance_list[3] + instance.amount 
+
+      if instance.date.month == 5 and instance.category == "Insurance":
+        insurance_list[4]= insurance_list[4] + instance.amount 
+
+      if instance.date.month == 6 and instance.category == "Insurance":
+        insurance_list[5]= insurance_list[5] + instance.amount 
+
+      if instance.date.month == 7 and instance.category == "Insurance":
+        insurance_list[6]= insurance_list[6] + instance.amount 
+
+      if instance.date.month == 8 and instance.category == "Insurance":
+        insurance_list[7]= insurance_list[7] + instance.amount 
+
+      if instance.date.month == 9 and instance.category == "Insurance":
+        insurance_list[8]= insurance_list[8] + instance.amount 
+
+      if instance.date.month == 10 and instance.category == "Insurance":
+        insurance_list[9]= insurance_list[9] + instance.amount 
+
+      if instance.date.month == 11 and instance.category == "Insurance":
+        insurance_list[10]= insurance_list[10] + instance.amount 
+
+      if instance.date.month == 12 and instance.category == "Insurance":
+        insurance_list[11]= insurance_list[11] + instance.amount
+    
+
+      # amount for medical
+      if instance.date.month == 1 and instance.category == "Medical":
+        medical_list[0]= medical_list[0] + instance.amount 
+
+      if instance.date.month == 2 and instance.category == "Medical":
+        medical_list[1]= medical_list[1] + instance.amount 
+
+      if instance.date.month == 3 and instance.category == "Medical":
+        medical_list[2]= medical_list[2] + instance.amount 
+
+      if instance.date.month == 4 and instance.category == "Medical":
+        medical_list[3]= medical_list[3] + instance.amount 
+
+      if instance.date.month == 5 and instance.category == "Medical":
+        medical_list[4]= medical_list[4] + instance.amount 
+
+      if instance.date.month == 6 and instance.category == "Medical":
+        medical_list[5]= medical_list[5] + instance.amount 
+
+      if instance.date.month == 7 and instance.category == "Medical":
+        medical_list[6]= medical_list[6] + instance.amount 
+
+      if instance.date.month == 8 and instance.category == "Medical":
+        medical_list[7]= medical_list[7] + instance.amount 
+
+      if instance.date.month == 9 and instance.category == "Medical":
+        medical_list[8]= medical_list[8] + instance.amount 
+
+      if instance.date.month == 10 and instance.category == "Medical":
+        medical_list[9]= medical_list[9] + instance.amount 
+
+      if instance.date.month == 11 and instance.category == "Medical":
+        medical_list[10]= medical_list[10] + instance.amount 
+
+      if instance.date.month == 12 and instance.category == "Medical":
+        medical_list[11]= medical_list[11] + instance.amount
+
+
+      # amount for personal
+      if instance.date.month == 1 and instance.category == "Personal":
+        personal_list[0]= personal_list[0] + instance.amount 
+
+      if instance.date.month == 2 and instance.category == "Personal":
+        personal_list[1]= personal_list[1] + instance.amount 
+
+      if instance.date.month == 3 and instance.category == "Personal":
+        personal_list[2]= personal_list[2] + instance.amount 
+
+      if instance.date.month == 4 and instance.category == "Personal":
+        personal_list[3]= personal_list[3] + instance.amount 
+
+      if instance.date.month == 5 and instance.category == "Personal":
+        personal_list[4]= personal_list[4] + instance.amount 
+
+      if instance.date.month == 6 and instance.category == "Personal":
+        personal_list[5]= personal_list[5] + instance.amount 
+
+      if instance.date.month == 7 and instance.category == "Personal":
+        personal_list[6]= personal_list[6] + instance.amount 
+
+      if instance.date.month == 8 and instance.category == "Personal":
+        personal_list[7]= personal_list[7] + instance.amount 
+
+      if instance.date.month == 9 and instance.category == "Personal":
+        personal_list[8]= personal_list[8] + instance.amount 
+
+      if instance.date.month == 10 and instance.category == "Personal":
+        personal_list[9]= personal_list[9] + instance.amount 
+
+      if instance.date.month == 11 and instance.category == "Personal":
+        personal_list[10]= personal_list[10] + instance.amount 
+
+      if instance.date.month == 12 and instance.category == "Personal":
+        personal_list[11]= personal_list[11] + instance.amount
+
+
+      # amount for recreational
+      if instance.date.month == 1 and instance.category == "Recreational":
+        recreational_list[0]= recreational_list[0] + instance.amount 
+
+      if instance.date.month == 2 and instance.category == "Recreational":
+        recreational_list[1]= recreational_list[1] + instance.amount 
+
+      if instance.date.month == 3 and instance.category == "Recreational":
+        recreational_list[2]= recreational_list[2] + instance.amount 
+
+      if instance.date.month == 4 and instance.category == "Recreational":
+        recreational_list[3]= recreational_list[3] + instance.amount 
+
+      if instance.date.month == 5 and instance.category == "Recreational":
+        recreational_list[4]= recreational_list[4] + instance.amount 
+
+      if instance.date.month == 6 and instance.category == "Recreational":
+        recreational_list[5]= recreational_list[5] + instance.amount 
+
+      if instance.date.month == 7 and instance.category == "Recreational":
+        recreational_list[6]= recreational_list[6] + instance.amount 
+
+      if instance.date.month == 8 and instance.category == "Recreational":
+        recreational_list[7]= recreational_list[7] + instance.amount 
+
+      if instance.date.month == 9 and instance.category == "Recreational":
+        recreational_list[8]= recreational_list[8] + instance.amount 
+
+      if instance.date.month == 10 and instance.category == "Recreational":
+        recreational_list[9]= recreational_list[9] + instance.amount 
+
+      if instance.date.month == 11 and instance.category == "Recreational":
+        recreational_list[10]= recreational_list[10] + instance.amount 
+
+      if instance.date.month == 12 and instance.category == "Recreational":
+        recreational_list[11]= recreational_list[11] + instance.amount
+
+
+      # amount for miscellaneous
+      if instance.date.month == 1 and instance.category == "Miscellaneous":
+        miscellaneous_list[0]= miscellaneous_list[0] + instance.amount 
+
+      if instance.date.month == 2 and instance.category == "Miscellaneous":
+        miscellaneous_list[1]= miscellaneous_list[1] + instance.amount 
+
+      if instance.date.month == 3 and instance.category == "Miscellaneous":
+        miscellaneous_list[2]= miscellaneous_list[2] + instance.amount 
+
+      if instance.date.month == 4 and instance.category == "Miscellaneous":
+        miscellaneous_list[3]= miscellaneous_list[3] + instance.amount 
+
+      if instance.date.month == 5 and instance.category == "Miscellaneous":
+        miscellaneous_list[4]= miscellaneous_list[4] + instance.amount 
+
+      if instance.date.month == 6 and instance.category == "Miscellaneous":
+        miscellaneous_list[5]= miscellaneous_list[5] + instance.amount 
+
+      if instance.date.month == 7 and instance.category == "Miscellaneous":
+        miscellaneous_list[6]= miscellaneous_list[6] + instance.amount 
+
+      if instance.date.month == 8 and instance.category == "Miscellaneous":
+        miscellaneous_list[7]= miscellaneous_list[7] + instance.amount 
+
+      if instance.date.month == 9 and instance.category == "Miscellaneous":
+        miscellaneous_list[8]= miscellaneous_list[8] + instance.amount 
+
+      if instance.date.month == 10 and instance.category == "Miscellaneous":
+        miscellaneous_list[9]= miscellaneous_list[9] + instance.amount 
+
+      if instance.date.month == 11 and instance.category == "Miscellaneous":
+        miscellaneous_list[10]= miscellaneous_list[10] + instance.amount 
+
+      if instance.date.month == 12 and instance.category == "Miscellaneous":
+        miscellaneous_list[11]= miscellaneous_list[11] + instance.amount
+
+
+    for i in food_list:
+      if i != 0:
+        count=count+1
+
+    for i in housing_list:
+      if i != 0:
+        hcount=hcount+1
+
+    for i in transportation_list:
+      if i != 0:
+        tcount=tcount+1
+
+    for i in utilities_list:
+      if i != 0:
+        ucount=ucount+1
+
+    for i in insurance_list:
+      if i != 0:
+        icount=icount+1
+
+    for i in medical_list:
+      if i != 0:
+        mcount=mcount+1
+
+    for i in personal_list:
+      if i != 0:
+        pcount=pcount+1
+
+    for i in recreational_list:
+      if i != 0:
+        rcount=rcount+1
+
+    for i in miscellaneous_list:
+      if i != 0:
+        micount=micount+1
+
+    sumFood=0
+    sumHousing=0
+    sumTransportation=0
+    sumUtilities=0
+    sumInsurance=0
+    sumMedical=0
+    sumPersonal=0
+    sumRecreational=0
+    sumMiscellaneous=0
+
+    avgFood=0
+    avgHousing=0
+    avgTransportation=0
+    avgUtilities=0
+    avgInsurance=0
+    avgMedical=0
+    avgPersonal=0
+    avgRecreational=0
+    avgMiscellaneous=0
+
+    for i in food_list:
+      sumFood=sumFood+i
+
+    for i in housing_list:
+      sumHousing=sumHousing+i
+
+    for i in transportation_list:
+      sumTransportation=sumTransportation+i
+
+    for i in utilities_list:
+      sumUtilities=sumUtilities+i
+
+    for i in insurance_list:
+      sumInsurance=sumInsurance+i
+
+    for i in medical_list:
+      sumMedical=sumMedical+i
+
+    for i in personal_list:
+      sumPersonal=sumPersonal+i
+
+    for i in recreational_list:
+      sumRecreational=sumRecreational+i
+
+    for i in miscellaneous_list:
+      sumMiscellaneous=sumMiscellaneous+i
+
+    if count ==0:
+      avgFood = sumFood/1
+    else:
+      avgFood = sumFood/count
+    if hcount ==0:
+      avgHousing = sumHousing/1
+    else:
+      avgHousing = sumHousing/hcount
+    if tcount == 0:
+      avgTransportation = sumTransportation/1
+    else:
+      avgTransportation = sumTransportation/tcount
+    if ucount == 0:
+      avgUtilities = sumUtilities/1
+    else:  
+      avgUtilities = sumUtilities/ucount
+    if icount == 0:
+      avgInsurance = sumInsurance/1
+    else:
+      avgInsurance = sumInsurance/icount
+    if mcount ==0:
+      avgMedical = sumMedical/1
+    else:
+      avgMedical = sumMedical/mcount
+    if pcount ==0:
+      avgPersonal = sumPersonal/1
+    else:
+      avgPersonal = sumPersonal/pcount
+    if rcount ==0:
+      avgRecreational = sumRecreational/1
+    else:
+      avgRecreational = sumRecreational/rcount
+    if micount == 0:
+      avgMiscellaneous = sumMiscellaneous/1
+    else:
+      avgMiscellaneous = sumMiscellaneous/micount
+
+    queryset = SetAside.objects.filter(username=request.user)
+    queryset.delete()
+
+    new_setAside = SetAside.objects.create(username=username, category="Food",amount=avgFood)
+    
+    new_setAside = SetAside.objects.create(username=username, category="Housing",amount=avgHousing)
+    
+    new_setAside = SetAside.objects.create(username=username, category="Transportation",amount=avgTransportation)
+    
+    new_setAside = SetAside.objects.create(username=username, category="Utilities",amount=avgUtilities)
+    
+    new_setAside = SetAside.objects.create(username=username, category="Insurance",amount=avgInsurance)
+    
+    new_setAside = SetAside.objects.create(username=username, category="Medical",amount=avgMedical)
+   
+    new_setAside = SetAside.objects.create(username=username, category="Personal",amount=avgPersonal)
+    
+    new_setAside = SetAside.objects.create(username=username, category="Recreational",amount=avgRecreational)
+    
+    new_setAside = SetAside.objects.create(username=username, category="Miscellaneous",amount=avgMiscellaneous)
+    new_setAside.save()
+    
+
+
     if request.method == "POST":
         get_user = User.objects.get(username=request.user)
-        if request.POST.get("addNewSetAside"):
-          username = request.user
-          setCategory = request.POST.get("SetCategory")
-          if setCategory == "":
-            messages.error(request, "..Please enter your category.")
-            return redirect('setGoal')
-          setAmt = request.POST.get("SetAmt")
-          if setAmt == "":
-            messages.error(request, "..Please enter your amount.")
-            return redirect('setGoal')
+        # if request.POST.get("addNewSetAside"):
+        #   username = request.user
+        #   setCategory = request.POST.get("SetCategory")
+        #   if setCategory == "":
+        #     messages.error(request, "..Please enter your category.")
+        #     return redirect('setGoal')
+        #   setAmt = request.POST.get("SetAmt")
+        #   if setAmt == "":
+        #     messages.error(request, "..Please enter your amount.")
+        #     return redirect('setGoal')
 
 
-          if setCategory =='Dividends':
-              get_user.dividends = float(get_user.dividends) + float(setAmt)
-              get_user.save()
+        #   if setCategory =='Dividends':
+        #       get_user.dividends = float(get_user.dividends) + float(setAmt)
+        #       get_user.save()
 
-          if setCategory == 'Interest':
-              get_user.interest = float(get_user.interest) + float(setAmt)
-              get_user.save()
+        #   if setCategory == 'Interest':
+        #       get_user.interest = float(get_user.interest) + float(setAmt)
+        #       get_user.save()
               
-          if setCategory =='Food':
-              get_user.food = float(get_user.food) + float(setAmt)
-              get_user.save()
+        #   if setCategory =='Food':
+        #       get_user.food = float(get_user.food) + float(setAmt)
+        #       get_user.save()
 
-          if setCategory == 'Housing':
-              get_user.housing = float(get_user.housing) + float(setAmt)
-              get_user.save()
+        #   if setCategory == 'Housing':
+        #       get_user.housing = float(get_user.housing) + float(setAmt)
+        #       get_user.save()
 
-          if setCategory =='Transportation':
-              get_user.transportation = float(get_user.transportation) + float(setAmt)
-              get_user.save()
+        #   if setCategory =='Transportation':
+        #       get_user.transportation = float(get_user.transportation) + float(setAmt)
+        #       get_user.save()
 
-          if setCategory == 'Utilities':
-              get_user.utilities = float(get_user.utilities) + float(setAmt)
-              get_user.save()
+        #   if setCategory == 'Utilities':
+        #       get_user.utilities = float(get_user.utilities) + float(setAmt)
+        #       get_user.save()
               
-          if setCategory =='Insurance':
-              get_user.insurance = float(get_user.insurance) + float(setAmt)
-              get_user.save()
+        #   if setCategory =='Insurance':
+        #       get_user.insurance = float(get_user.insurance) + float(setAmt)
+        #       get_user.save()
 
-          if setCategory == 'Medical':
-              get_user.medical = float(get_user.medical) + float(setAmt)
-              get_user.save()
+        #   if setCategory == 'Medical':
+        #       get_user.medical = float(get_user.medical) + float(setAmt)
+        #       get_user.save()
 
-          if setCategory == 'Personal':
-              get_user.personal = float(get_user.personal) + float(setAmt)
-              get_user.save()
+        #   if setCategory == 'Personal':
+        #       get_user.personal = float(get_user.personal) + float(setAmt)
+        #       get_user.save()
               
-          if setCategory =='Recreational':
-              get_user.recreational = float(get_user.recreational) + float(setAmt)
-              get_user.save()
+        #   if setCategory =='Recreational':
+        #       get_user.recreational = float(get_user.recreational) + float(setAmt)
+        #       get_user.save()
 
-          if setCategory == 'Miscellaneous':
-              get_user.miscellaneous = float(get_user.miscellaneous) + float(setAmt)
-              get_user.save()
+        #   if setCategory == 'Miscellaneous':
+        #       get_user.miscellaneous = float(get_user.miscellaneous) + float(setAmt)
+        #       get_user.save()
 
-          new_setAside = SetAside.objects.create(username=username, category=setCategory,amount=setAmt)
-          new_setAside.save()
-          return redirect('setGoal')
+        #   new_setAside = SetAside.objects.create(username=username, category=setCategory,amount=setAmt)
+        #   new_setAside.save()
+        #   return redirect('setGoal')
 
         if request.POST.get("addGoals"):
             username = request.user
