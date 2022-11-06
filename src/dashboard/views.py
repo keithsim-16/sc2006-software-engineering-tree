@@ -211,6 +211,7 @@ def account_view(request, *args, **kwargs):
     cashflow = 0
     income = 0.0
     expenditure = 0.0
+    saved = 0.0
 
     for i in cur_month:
       if (i.transaction_type == "Income"):
@@ -223,9 +224,11 @@ def account_view(request, *args, **kwargs):
     b = Budget.objects.filter(username=request.user)
     for instance in b:
       income -= float(instance.per_month)
+      saved += float(instance.per_month)
       break
     else:
       income /= 2
+      saved = income
 
     progress = round((expenditure / income) * 100, 2)
 
@@ -245,7 +248,9 @@ def account_view(request, *args, **kwargs):
         "cashflow": cashflow,
         "currmonth": datetime.now().strftime("%B %Y"),
         "income": income,
-        "progress": progress
+        "progress": progress,
+        "expenditure": expenditure,
+        "saved": saved
     }
 
     return render(request, "account.html", context)
