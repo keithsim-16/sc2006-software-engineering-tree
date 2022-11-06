@@ -25,10 +25,12 @@
             </thead>
             <tbody>
               {% for instance in Oobject_list %}
+              {% if instance.amount != 0 %}
               <tr>
                 <td><!-- <a href='{{ instance.get_absolute_urlss }}'> --> {{ instance.category }} <!-- </a> --> </td>
                 <td>{{ instance.amount }} </td>
               </tr>
+              {% endif %}
               {% endfor %}
             </tbody>
           </table>

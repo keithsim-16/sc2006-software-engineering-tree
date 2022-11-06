@@ -50,7 +50,8 @@ class Budget(models.Model):
  goal_Name = models.CharField(max_length=225)  
  value = models.DecimalField(max_digits=20,decimal_places=2)  
  target_Duration = models.DecimalField(max_digits=20,decimal_places=0) 
- remarks = models.CharField(max_length=225) 
+ remarks = models.CharField(max_length=225)
+ per_month = models.DecimalField(max_digits=20,decimal_places=2, default=0)
   
  def get_absolute_urls(self):  
   return f"/budgetFinancial/{self.id}/" 

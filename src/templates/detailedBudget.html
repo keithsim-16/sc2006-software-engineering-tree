@@ -52,19 +52,19 @@
                         {% csrf_token %}
                         <div class="form-group">
                           <input type="text" class="form-control form-control-lg" id="priority" name="priority"
-                            aria-describedby="emailHelp" placeholder="Priority" required>
+                            aria-describedby="emailHelp" placeholder="Priority" value="{{ Object_list.priority }}" required>
                         </div>
                         <div class="form-group">
                           <input type="text" class="form-control form-control-lg" id="goal_Name" name="goal_Name"
-                            placeholder="Goal Name" required>
+                            placeholder="Goal Name" value="{{ Object_list.goal_Name }}" required>
                         </div>
                         <div class="form-group">
                           <input type="text" class="form-control form-control-lg" id="value" name="value"
-                            placeholder="Value" required>
+                            placeholder="Value" value="{{ Object_list.value }}" required>
                         </div>
                         <div class="form-group">
                           <input type="text" class="form-control form-control-lg" id="target_Duration"
-                            name="target_Duration" placeholder="Target Duration (Days)" required>
+                            name="target_Duration" placeholder="Target Duration (Days)" value="{{ Object_list.target_Duration }}" required>
                         </div>
                         <button class="btn btn-primary btn-block" type="submit" name="editGoal" value="1">Edit
                           Goals</button>

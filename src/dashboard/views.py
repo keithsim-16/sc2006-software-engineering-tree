@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
 from dateutil.relativedelta import relativedelta
 
+from .controllers import dataGovAPI
 
 # Logged in Views
 def home_view(request, *args, **kwargs):
@@ -208,12 +209,25 @@ def account_view(request, *args, **kwargs):
     cur_month = Transaction.objects.filter(username=request.user, date__month=datetime.now().month)
 
     cashflow = 0
+    income = 0.0
+    expenditure = 0.0
 
     for i in cur_month:
       if (i.transaction_type == "Income"):
         cashflow += i.amount
+        income += float(i.amount)
       else:
         cashflow -= i.amount
+        expenditure += float(i.amount)
+
+    b = Budget.objects.filter(username=request.user)
+    for instance in b:
+      income -= float(instance.per_month)
+      break
+    else:
+      income /= 2
+
+    progress = round((expenditure / income) * 100, 2)
 
     queryset = Transaction.objects.filter(
         username=request.user).order_by('-date')
@@ -229,7 +243,9 @@ def account_view(request, *args, **kwargs):
         "fa_list": faset,
         "networth": networth,
         "cashflow": cashflow,
-        "currmonth": datetime.now().strftime("%B %Y")
+        "currmonth": datetime.now().strftime("%B %Y"),
+        "income": income,
+        "progress": progress
     }
 
     return render(request, "account.html", context)
@@ -470,23 +486,23 @@ def budget_setup_view(request, *args, **kwargs):
       username = request.user
       priority = request.POST.get("Priority")
       if priority == "":
-        messages.error(request, "..Please enter your priority.")
+        messages.error(request, "Please enter your priority.")
         return redirect('budget')
       goal_Name = request.POST.get("Goal Name")
       if goal_Name == "":
-        messages.error(request, "..Please enter the name of your goal.")
+        messages.error(request, "Please enter the name of your goal.")
         return redirect('budget')
       value = request.POST.get("Value")
       if value == "":
-        messages.error(request, "..Please enter the value of your goal.")
+        messages.error(request, "Please enter the value of your goal.")
         return redirect('budget')
       target_Duration = request.POST.get("Target Duration")
       if target_Duration == "":
-        messages.error(request, "..Please enter the duration of your goal.")
+        messages.error(request, "Please enter the duration of your goal.")
         return redirect('budget')
 
       if target_Duration.isdigit() == False:
-        messages.error(request, "..Please enter in the target duration in integer only.")
+        messages.error(request, "Please enter in the target duration in integer only.")
         return redirect('budget')
 
       get_user.leftOver = float(get_user.net_worth) - float(get_user.dividends) - float(get_user.interest) - float(get_user.food) - float(get_user.housing) - float(get_user.transportation) - float(get_user.utilities)- float(get_user.insurance) - float(get_user.medical) - float(get_user.personal)- float(get_user.recreational) - float(get_user.miscellaneous)
@@ -500,7 +516,7 @@ def budget_setup_view(request, *args, **kwargs):
         remarks = "You must save up $" + str(round(get_user.goalPrice*30,2)) + " per month or $" + str(round(get_user.goalPrice,2)) + " per day."
       
       new_budget = Budget.objects.create(
-          username=username, priority=priority, goal_Name=goal_Name, value=value, target_Duration=target_Duration,remarks = remarks)
+          username=username, priority=priority, goal_Name=goal_Name, value=value, target_Duration=target_Duration,remarks = remarks, per_month=round(get_user.goalPrice*30,2))
       new_budget.save()
 
       username = request.user
@@ -1826,66 +1842,6 @@ def set_goals(request):
 
     if request.method == "POST":
         get_user = User.objects.get(username=request.user)
-        # if request.POST.get("addNewSetAside"):
-        #   username = request.user
-        #   setCategory = request.POST.get("SetCategory")
-        #   if setCategory == "":
-        #     messages.error(request, "..Please enter your category.")
-        #     return redirect('setGoal')
-        #   setAmt = request.POST.get("SetAmt")
-        #   if setAmt == "":
-        #     messages.error(request, "..Please enter your amount.")
-        #     return redirect('setGoal')
-
-
-        #   if setCategory =='Dividends':
-        #       get_user.dividends = float(get_user.dividends) + float(setAmt)
-        #       get_user.save()
-
-        #   if setCategory == 'Interest':
-        #       get_user.interest = float(get_user.interest) + float(setAmt)
-        #       get_user.save()
-              
-        #   if setCategory =='Food':
-        #       get_user.food = float(get_user.food) + float(setAmt)
-        #       get_user.save()
-
-        #   if setCategory == 'Housing':
-        #       get_user.housing = float(get_user.housing) + float(setAmt)
-        #       get_user.save()
-
-        #   if setCategory =='Transportation':
-        #       get_user.transportation = float(get_user.transportation) + float(setAmt)
-        #       get_user.save()
-
-        #   if setCategory == 'Utilities':
-        #       get_user.utilities = float(get_user.utilities) + float(setAmt)
-        #       get_user.save()
-              
-        #   if setCategory =='Insurance':
-        #       get_user.insurance = float(get_user.insurance) + float(setAmt)
-        #       get_user.save()
-
-        #   if setCategory == 'Medical':
-        #       get_user.medical = float(get_user.medical) + float(setAmt)
-        #       get_user.save()
-
-        #   if setCategory == 'Personal':
-        #       get_user.personal = float(get_user.personal) + float(setAmt)
-        #       get_user.save()
-              
-        #   if setCategory =='Recreational':
-        #       get_user.recreational = float(get_user.recreational) + float(setAmt)
-        #       get_user.save()
-
-        #   if setCategory == 'Miscellaneous':
-        #       get_user.miscellaneous = float(get_user.miscellaneous) + float(setAmt)
-        #       get_user.save()
-
-        #   new_setAside = SetAside.objects.create(username=username, category=setCategory,amount=setAmt)
-        #   new_setAside.save()
-        #   return redirect('setGoal')
-
         if request.POST.get("addGoals"):
             username = request.user
             priority = request.POST.get("Priority")
@@ -1924,7 +1880,7 @@ def set_goals(request):
               remarks = "You must save up $" + str(round(get_user.goalPrice*30,2)) + " per month or $" + str(round(get_user.goalPrice,2)) + " per day."
             
         new_budget = Budget.objects.create(
-            username=username, priority=priority, goal_Name=goal_Name, value=value, target_Duration=target_Duration,remarks = remarks)
+            username=username, priority=priority, goal_Name=goal_Name, value=value, target_Duration=target_Duration,remarks = remarks, per_month=round(get_user.goalPrice*30,2))
         new_budget.save()
 
 
@@ -2085,6 +2041,10 @@ def input_verification_code(request, email):
     get_user = User.objects.get(email=email)
 
     verification = request.POST.get('Verification')
+
+    if verification == "":
+      messages.error(request, "Please enter verification code.")
+      return redirect('Verifying', email=email)
 
     check = check_password(verification, get_user.temp)
 

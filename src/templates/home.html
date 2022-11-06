@@ -47,9 +47,13 @@
         </div>
         <!-- Card Body -->
         <div class="card-body">
+          {% if not incomedata %}
+          <h1>No Income Recorded</h1>
+          {% else %}
           <div class="chart-pie pt-4">
             <canvas id="incomeChart"></canvas>
           </div>
+          {% endif %}
           <!-- <hr> -->
         </div>
       </div>
@@ -61,9 +65,13 @@
         </div>
         <!-- Card Body -->
         <div class="card-body">
+          {% if not expensesdata %}
+          <h1>No Expenses Recorded</h1>
+          {% else %}
           <div class="chart-pie pt-4">
             <canvas id="expensesChart"></canvas>
           </div>
+          {% endif %}
           <!-- <hr> -->
         </div>
       </div>
