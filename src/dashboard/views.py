@@ -212,6 +212,7 @@ def account_view(request, *args, **kwargs):
     income = 0.0
     expenditure = 0.0
     saved = 0.0
+    progress = 0
 
     for i in cur_month:
       if (i.transaction_type == "Income"):
@@ -230,7 +231,8 @@ def account_view(request, *args, **kwargs):
       income /= 2
       saved = income
 
-    progress = round((expenditure / income) * 100, 2)
+    if income > 0:
+      progress = round((expenditure / income) * 100, 2)
 
     queryset = Transaction.objects.filter(
         username=request.user).order_by('-date')
