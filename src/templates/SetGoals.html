@@ -27,7 +27,10 @@
               {% for instance in Oobject_list %}
               {% if instance.amount != 0 %}
               <tr>
-                <td><!-- <a href='{{ instance.get_absolute_urlss }}'> --> {{ instance.category }} <!-- </a> --> </td>
+                <td>
+                  <!-- <a href='{{ instance.get_absolute_urlss }}'> --> {{ instance.category }}
+                  <!-- </a> -->
+                </td>
                 <td>{{ instance.amount }} </td>
               </tr>
               {% endif %}
@@ -39,8 +42,8 @@
           {% endif %}
         </div>
       </div>
-      
-      
+
+
     </div>
   </div>
   <div class="col-lg-6">
@@ -51,7 +54,7 @@
 
       <div class="card-body">
         <div class="table-responsive">
-          {% if object_list %}
+          {% if itemsWithinBudget %}
           <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
             <thead>
               <tr>
@@ -60,13 +63,10 @@
               </tr>
             </thead>
             <tbody>
-              {% for instance in object_list %}
+              {% for instance in itemsWithinBudget %}
               <tr>
-                <td>{{ instance.date }} </td>
-                <td><a href='{{ instance.get_absolute_url }}'> {{ instance.transaction_name }} </a></td>
-                <td>{{ instance.remarks }} </td>
-                <td>{{ instance.category }} </td>
-                <td>{{ instance.amount }} </td>
+                <td>{{ instance.level_1 }} </td>
+                <td>{{ instance.value}} </td>
               </tr>
               {% endfor %}
             </tbody>
@@ -74,14 +74,6 @@
           {% else %}
           <h1>No Information Recorded</h1>
           {% endif %}
-        </div>
-      </div>
-      <div class="col-lg">
-        <div class="card shadow mb-4">
-          <div class="card-body text-center">
-            <a class="btn btn-primary btn-block" type="button" data-toggle="modal"
-              data-target="#transactionModal">View All</a>
-          </div>
         </div>
       </div>
     </div>
