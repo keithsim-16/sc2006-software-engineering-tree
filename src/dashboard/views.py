@@ -1906,9 +1906,10 @@ def set_goals(request):
 
 def getDataByPrice(request):
   b = Budget.objects.filter(username=request.user)
+  u = User.objects.get(username=request.user).net_worth
   maxValue = 0
   for instance in b:
-    maxValue = max(instance.per_month/30, maxValue)
+    maxValue = max(u - instance.per_month/30, maxValue)
     print(instance.per_month)
   
   print(maxValue)
