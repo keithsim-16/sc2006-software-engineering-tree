@@ -445,7 +445,7 @@ def transaction_lookup_view(request, id):
 
         if not isfloat(transactionAmt):
           messages.error(request, "Please fill in your transaction value in decimal number only.")
-          return redirect('detailed_transaction')
+          return redirect('detailed_transaction',id=id)
 
         get_user = User.objects.get(username=username)
         get_fa = FinancialAccount.objects.get(
@@ -1138,13 +1138,13 @@ def budget_lookup_view(request, id):
         value = request.POST.get("value")
         target_Duration = request.POST.get("target_Duration")
 
-        if not value.isfloat():
+        if not isfloat(value):
           messages.error(request, "Please fill in your goal value in decimal number only.")
-          return redirect('detailed_budget')
+          return redirect('detailed_budget',id=id)
 
         if not target_Duration.isdigit():
           messages.error(request, "Please fill in your target duration in whole number only.")
-          return redirect('detailed_budget')
+          return redirect('detailed_budget',id=id)
 
         budget.priority = priority
         budget.goal_Name = goal_Name
