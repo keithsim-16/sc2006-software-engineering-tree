@@ -103,6 +103,23 @@ def setup_view(request, *args, **kwargs):
         acctName = request.POST.get("acctName")
         acctValue = request.POST.get("acctValue")
 
+        if acctType == None:
+          messages.error(request, "Please fill in your account type.")
+          return redirect('set-up')
+
+        if acctName == "":
+          messages.error(request, "Please fill in your account name.")
+          return redirect('set-up')
+
+        if acctValue == "":
+          messages.error(request, "Please fill in your account value.")
+          return redirect('set-up')
+
+
+        if not isfloat(acctValue):
+          messages.error(request, "Please fill in your account value in decimal number only.")
+          return redirect('set-up')
+
         new_fa = FinancialAccount.objects.create(
             username=username, type=acctType, name=acctName, value=acctValue)
         new_fa.save()
@@ -152,9 +169,15 @@ def account_view(request, *args, **kwargs):
         transactionAmt = request.POST.get("transactionAmt")
         transactionRemarks = request.POST.get("transactionRemarks")
 
+        if not isfloat(transactionAmt):
+          messages.error(request, "Transaction amount should be a decimal number.")
+          return redirect('account')
+
         if float(transactionAmt) < 0:
           messages.error(request, "Transaction amount should be greater than zero.")
           return redirect('account')
+
+
 
         get_user = User.objects.get(username=request.user)
         get_fa = FinancialAccount.objects.get(
@@ -187,6 +210,24 @@ def account_view(request, *args, **kwargs):
         acctType = request.POST.get("acctType")
         acctName = request.POST.get("acctName")
         acctValue = request.POST.get("acctValue")
+
+        print(acctType)
+        if acctType == None:
+          messages.error(request, "Please fill in your account type.")
+          return redirect('account')
+
+        if acctName == "":
+          messages.error(request, "Please fill in your account name.")
+          return redirect('account')
+
+        if acctValue == "":
+          messages.error(request, "Please fill in your account value.")
+          return redirect('account')
+
+
+        if not isfloat(acctValue):
+          messages.error(request, "Please fill in your account value in decimal number only.")
+          return redirect('account')
 
         if float(acctValue) < 0:
           messages.error(request, "Account value should be greater than zero.")
@@ -274,6 +315,22 @@ def account_lookup_view(request, id):
         accountType = request.POST.get("acctType")
         accountName = request.POST.get("acctName")
         accountValue = request.POST.get("acctValue")
+
+        if accountType == None:
+          messages.error(request, "Please fill in your account type.")
+          return redirect('set-up')
+
+        if accountName == "":
+          messages.error(request, "Please fill in your account name.")
+          return redirect('set-up')
+
+        if accountValue == "":
+          messages.error(request, "Please fill in your account value.")
+          return redirect('set-up')
+
+        if not isfloat(accountValue):
+          messages.error(request, "Please fill in your account value in decimal number only.")
+          return redirect('set-up')
 
         get_user = User.objects.get(username=request.user)
 
@@ -385,6 +442,10 @@ def transaction_lookup_view(request, id):
         transactionName = request.POST.get("transactionName")
         transactionAmt = request.POST.get("transactionAmt")
         transactionRemarks = request.POST.get("transactionRemarks")
+
+        if not isfloat(transactionAmt):
+          messages.error(request, "Please fill in your transaction value in decimal number only.")
+          return redirect('detailed_transaction')
 
         get_user = User.objects.get(username=username)
         get_fa = FinancialAccount.objects.get(
@@ -507,6 +568,10 @@ def budget_setup_view(request, *args, **kwargs):
       if target_Duration == "":
         messages.error(request, "Please enter the duration of your goal.")
         return redirect('budget')
+
+      if not isfloat(value):
+        messages.error(request, "Please fill in your goal value in decimal number only.")
+        return redirect('budget-set-up')
 
       if target_Duration.isdigit() == False:
         messages.error(request, "Please enter in the target duration in integer only.")
@@ -1073,6 +1138,14 @@ def budget_lookup_view(request, id):
         value = request.POST.get("value")
         target_Duration = request.POST.get("target_Duration")
 
+        if not value.isfloat():
+          messages.error(request, "Please fill in your goal value in decimal number only.")
+          return redirect('detailed_budget')
+
+        if not target_Duration.isdigit():
+          messages.error(request, "Please fill in your target duration in whole number only.")
+          return redirect('detailed_budget')
+
         budget.priority = priority
         budget.goal_Name = goal_Name
         budget.value = value
@@ -1125,6 +1198,10 @@ def set_aside_view(request,id):
 
         setCat = request.POST.get("SetCategory")
         setAmount = request.POST.get("SetAmt")
+
+        if not isfloat(setAmount):
+          messages.error(request, "Please fill in your amount in decimal number only.")
+          return redirect('setAside')
 
         if setAside.category == setCat:
           if setCat =='Dividends':
@@ -1853,23 +1930,27 @@ def set_goals(request):
             username = request.user
             priority = request.POST.get("Priority")
             if priority == "":
-              messages.error(request, "..Please enter your priority.")
+              messages.error(request, "Please enter your priority.")
               return redirect('budget')
             goal_Name = request.POST.get("Goal Name")
             if goal_Name == "":
-              messages.error(request, "..Please enter the name of your goal.")
+              messages.error(request, "Please enter the name of your goal.")
               return redirect('budget')
             value = request.POST.get("Value")
             if value == "":
-              messages.error(request, "..Please enter the value of your goal.")
+              messages.error(request, "Please enter the value of your goal.")
               return redirect('budget')
             target_Duration = request.POST.get("Target Duration")
             if target_Duration == "":
-              messages.error(request, "..Please enter the duration of your goal.")
+              messages.error(request, "Please enter the duration of your goal.")
               return redirect('budget')
 
             if target_Duration.isdigit() == False:
               messages.error(request, "Please enter in the target duration in integer only.")
+              return redirect('budget')
+
+            if not isfloat(value):
+              messages.error(request, "Please fill in your goal value in decimal number only.")
               return redirect('budget')
 
             get_user.leftOver = float(get_user.net_worth) 
@@ -1924,7 +2005,12 @@ def getDataByPrice(request):
   print(updatedDB)
   return updatedDB
 
-
+def isfloat(num):
+    try:
+        float(num)
+        return True
+    except ValueError:
+        return False
 
 # Account Verification / Creation Views
 
