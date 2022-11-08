@@ -1179,7 +1179,7 @@ def budget_lookup_view(request, id):
         else:
           remarks = "You must save up $" + str(round(get_user.goalPrice*30,2)) + " per month or $" + str(round(get_user.goalPrice,2)) + " per day."
             
-        new_budget = Budget.objects.get(username=username)
+        new_budget = Budget.objects.get(username=username,id=id)
         new_budget.remarks = remarks
         new_budget.save()
 
