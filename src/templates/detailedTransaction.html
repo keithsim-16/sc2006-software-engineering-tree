@@ -70,10 +70,17 @@
                   <div class="modal-body">
                     <form action="" method='POST'>
                       {% csrf_token %}
-                      <div class="form-group">
+                      <!-- <div class="form-group">
                         <select class="form-control form-control-lg" name="transactionType" required>
                           <option value="Income" {% if object_list.transaction_type == 'Income' %}selected{% endif %}>Income</option>
                             <option value="Expense" {% if object_list.transaction_type == 'Expense' %}selected{% endif %}>Expense</option>
+                        </select>
+                      </div> -->
+                      <div class="form-group">
+                        <select class="form-control form-control-lg" name="transactionType" id="transType" onchange="filterBlocksByAddress(this.options[this.selectedIndex].text)" required>
+                          <option value="" disabled selected>Transaction Type</option>
+                          <option>Income</option>
+                          <option>Expense</option>
                         </select>
                       </div>
                       <div class="form-group">
@@ -91,6 +98,23 @@
                             name="transactionDate" aria-describedby="emailHelp" value="{{ object_list.date|date:"Y-m-d" }}" required>
                       </div>
                       <div class="form-group">
+                        <select class="form-control form-control-lg" name="transactionCategory" id="transCat" required>
+                          <option value="">Choose Transaction Type</option>
+                          <option class="hidden" name="Income">Salary</option>
+                          <option class="hidden" name="Income">Dividends</option>
+                          <option class="hidden" name="Income">Interest</option>
+                          <option class="hidden" name="Expense">Food</option>
+                          <option class="hidden" name="Expense">Housing</option>
+                          <option class="hidden" name="Expense">Transportation</option>
+                          <option class="hidden" name="Expense">Utilities</option>
+                          <option class="hidden" name="Expense">Insurance</option>
+                          <option class="hidden" name="Expense">Medical</option>
+                          <option class="hidden" name="Expense">Personal</option>
+                          <option class="hidden" name="Expense">Recreational</option>
+                          <option class="hidden" name="Expense">Miscellaneous</option>
+                        </select>
+                      </div>
+                      <!-- <div class="form-group">
                         <select class="form-control form-control-lg" name="transactionCategory" required>
                           <option value="Salary" {% if object_list.category == 'Salary' %}selected{% endif %}>Salary</option>
                           <option value="Dividends" {% if object_list.category == 'Dividends' %}selected{% endif %}>Dividends</option>
@@ -105,7 +129,7 @@
                           <option value="Recreational" {% if object_list.category == 'Recreational' %}selected{% endif %}>Recreational</option>
                           <option value="Miscellaneous" {% if object_list.category == 'Miscellaneous' %}selected{% endif %}>Miscellaneous</option>
                         </select>
-                      </div>
+                      </div> -->
                       <div class="form-group">
                         <input type="text" class="form-control form-control-lg" id="transactionName"
                           name="transactionName" placeholder="Transaction Name"
