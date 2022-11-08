@@ -504,19 +504,30 @@
 	});
 	</script>
 	
+	<script>
+	function filterBlocksByAddress(addressText) {
+		console.log(addressText)
+		//hide all options.
+		document.querySelectorAll('#transCat option[name]').forEach(function(el) {
+			el.classList.add("hidden")
+		});
+		//if not first one slected
+		if (addressText != "Choose an Address") {
+			//loop through options where values matches..
+			document.querySelectorAll('#transCat option[name=' + addressText + ']').forEach(function(el) {
+				el.classList.remove("hidden"); //remove class
+			})
+		}
+		document.getElementById('transCat').selectedIndex = 0 //set first vlau slected
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	}
+  </script>
+
+	<style>
+		.hidden {
+			display: none
+		}
+	</style>
 
     <!-- Page level plugins -->
     <script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
