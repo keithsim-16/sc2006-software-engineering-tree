@@ -2004,6 +2004,7 @@ def set_goals(request):
         new_budget = Budget.objects.create(
             username=username, priority=priority, goal_Name=goal_Name, value=value, target_Duration=target_Duration,remarks = remarks, per_month=round(get_user.goalPrice*30,2))
         new_budget.save()
+        return redirect('setGoal')
 
 
     queryset = SetAside.objects.filter(username=request.user)
