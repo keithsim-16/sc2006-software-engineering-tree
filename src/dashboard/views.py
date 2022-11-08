@@ -1076,24 +1076,41 @@ def budget_setup_view(request, *args, **kwargs):
         queryset = SetAside.objects.filter(username=request.user)
         queryset.delete()
 
-        new_setAside = SetAside.objects.create(username=username, category="Food",amount=avgFood)
+        if avgFood != 0:
+          new_setAside = SetAside.objects.create(username=username, category="Food",amount=avgFood)
+          new_setAside.save()
+    
+        if avgHousing != 0:
+          new_setAside = SetAside.objects.create(username=username, category="Housing",amount=avgHousing)
+          new_setAside.save()
         
-        new_setAside = SetAside.objects.create(username=username, category="Housing",amount=avgHousing)
+        if avgTransportation != 0:
+          new_setAside = SetAside.objects.create(username=username, category="Transportation",amount=avgTransportation)
+          new_setAside.save()
         
-        new_setAside = SetAside.objects.create(username=username, category="Transportation",amount=avgTransportation)
+        if avgUtilities != 0:
+          new_setAside = SetAside.objects.create(username=username, category="Utilities",amount=avgUtilities)
+          new_setAside.save()
         
-        new_setAside = SetAside.objects.create(username=username, category="Utilities",amount=avgUtilities)
+        if avgInsurance != 0:
+          new_setAside = SetAside.objects.create(username=username, category="Insurance",amount=avgInsurance)
+          new_setAside.save()
         
-        new_setAside = SetAside.objects.create(username=username, category="Insurance",amount=avgInsurance)
-        
-        new_setAside = SetAside.objects.create(username=username, category="Medical",amount=avgMedical)
+        if avgMedical != 0:
+          new_setAside = SetAside.objects.create(username=username, category="Medical",amount=avgMedical)
+          new_setAside.save()
        
-        new_setAside = SetAside.objects.create(username=username, category="Personal",amount=avgPersonal)
+        if avgPersonal != 0:
+          new_setAside = SetAside.objects.create(username=username, category="Personal",amount=avgPersonal)
+          new_setAside.save()
         
-        new_setAside = SetAside.objects.create(username=username, category="Recreational",amount=avgRecreational)
+        if avgRecreational != 0:
+          new_setAside = SetAside.objects.create(username=username, category="Recreational",amount=avgRecreational)
+          new_setAside.save()
         
-        new_setAside = SetAside.objects.create(username=username, category="Miscellaneous",amount=avgMiscellaneous)
-        new_setAside.save()
+        if avgMiscellaneous != 0:
+          new_setAside = SetAside.objects.create(username=username, category="Miscellaneous",amount=avgMiscellaneous)
+          new_setAside.save()
 
       return redirect('budget')
 
@@ -1903,24 +1920,41 @@ def set_goals(request):
     queryset = SetAside.objects.filter(username=request.user)
     queryset.delete()
 
-    new_setAside = SetAside.objects.create(username=username, category="Food",amount=avgFood)
+    if avgFood != 0:
+      new_setAside = SetAside.objects.create(username=username, category="Food",amount=avgFood)
+      new_setAside.save()
     
-    new_setAside = SetAside.objects.create(username=username, category="Housing",amount=avgHousing)
+    if avgHousing != 0:
+      new_setAside = SetAside.objects.create(username=username, category="Housing",amount=avgHousing)
+      new_setAside.save()
     
-    new_setAside = SetAside.objects.create(username=username, category="Transportation",amount=avgTransportation)
+    if avgTransportation != 0:
+      new_setAside = SetAside.objects.create(username=username, category="Transportation",amount=avgTransportation)
+      new_setAside.save()
     
-    new_setAside = SetAside.objects.create(username=username, category="Utilities",amount=avgUtilities)
+    if avgUtilities != 0:
+      new_setAside = SetAside.objects.create(username=username, category="Utilities",amount=avgUtilities)
+      new_setAside.save()
     
-    new_setAside = SetAside.objects.create(username=username, category="Insurance",amount=avgInsurance)
+    if avgInsurance != 0:
+      new_setAside = SetAside.objects.create(username=username, category="Insurance",amount=avgInsurance)
+      new_setAside.save()
     
-    new_setAside = SetAside.objects.create(username=username, category="Medical",amount=avgMedical)
+    if avgMedical != 0:
+      new_setAside = SetAside.objects.create(username=username, category="Medical",amount=avgMedical)
+      new_setAside.save()
    
-    new_setAside = SetAside.objects.create(username=username, category="Personal",amount=avgPersonal)
+    if avgPersonal != 0:
+      new_setAside = SetAside.objects.create(username=username, category="Personal",amount=avgPersonal)
+      new_setAside.save()
     
-    new_setAside = SetAside.objects.create(username=username, category="Recreational",amount=avgRecreational)
+    if avgRecreational != 0:
+      new_setAside = SetAside.objects.create(username=username, category="Recreational",amount=avgRecreational)
+      new_setAside.save()
     
-    new_setAside = SetAside.objects.create(username=username, category="Miscellaneous",amount=avgMiscellaneous)
-    new_setAside.save()
+    if avgMiscellaneous != 0:
+      new_setAside = SetAside.objects.create(username=username, category="Miscellaneous",amount=avgMiscellaneous)
+      new_setAside.save()
     
     itemsWithinBudget = getDataByPrice(request)
 

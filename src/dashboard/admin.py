@@ -11,3 +11,4 @@ class FinancialAccountAdmin(admin.ModelAdmin):
     list_display = ['username', 'type', 'name', 'value']
 
 admin.site.register(Budget)
+admin.site.register(SetAside)
