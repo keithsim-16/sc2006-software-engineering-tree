@@ -15,4 +15,29 @@ Tree Financial Tracker is a web-based financial tracking application, targeted a
 - Run `python manage.py runserver`
 - Go to http://127.0.0.1:8000/ to view application
 
+## References
+### Frameworks used:
+- Django - 4.1.2
+
+### Template used:
+- Bootstrap 4 - Start Bootstrap Admin 2   
+https://startbootstrap.com/theme/sb-admin-2 
+
+### Libraries used:
+- python-dateutil - 2.8.2
+- requests - 2.28.1
+
+### API used:
+- Data.gov.sg 
+
+### Datasets used:
+- Average Retail Prices Of Selected Consumer Items, Annual    
+https://data.gov.sg/dataset/average-retail-prices-of-selected-items-annual 
+
+- Tax Rates for Individual Income Tax  
+https://data.gov.sg/dataset/tax-rates-for-individual-income-tax 
+
+- Public Transport Utilisation - Average Daily Public Transport Ridership   
+https://data.gov.sg/dataset/public-transport-utilisation-average-public-transport-ridership 
+
 
