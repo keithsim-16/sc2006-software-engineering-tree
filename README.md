@@ -1,4 +1,4 @@
-# SC/CE/CZ2006 Software Engineering tree
+# SC/CE/CZ2006 Software Engineering - Team 3 - Tree
 
 ## Application Overview
 Tree Financial Tracker is a web-based financial tracking application, targeted at money-minded individuals that live in Singapore. The application aims to aid users in being more frugal with their monetary expenses by tracking their financial habits. The budget calculator feature of the application also helps users ensure that they are spending within their limits in order to achieve their financial goals.
