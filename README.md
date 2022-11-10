@@ -13,7 +13,12 @@ Tree Financial Tracker is a web-based financial tracking application, targeted a
 - Run `pip install -r requirements.txt`
 - Navigate to src
 - Run `python manage.py runserver`
-- Go to http://127.0.0.1:8000/ to view application
+- Go to http://127.0.0.1:8000/ to view application        
+
+## Access Administrative Settings
+- Run `python manage.py createsuperuser`
+- Follow on screen instructions
+- Go to http://127.0.0.1:8000/admin/ to view admin settings
 
 ## References
 ### Frameworks used:
