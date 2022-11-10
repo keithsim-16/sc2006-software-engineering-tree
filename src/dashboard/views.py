@@ -555,27 +555,31 @@ def budget_setup_view(request, *args, **kwargs):
       priority = request.POST.get("Priority")
       if priority == "":
         messages.error(request, "Please enter your priority.")
-        return redirect('budget')
+        return redirect('budget-set-up')
       goal_Name = request.POST.get("Goal Name")
       if goal_Name == "":
         messages.error(request, "Please enter the name of your goal.")
-        return redirect('budget')
+        return redirect('budget-set-up')
       value = request.POST.get("Value")
       if value == "":
         messages.error(request, "Please enter the value of your goal.")
-        return redirect('budget')
+        return redirect('budget-set-up')
       target_Duration = request.POST.get("Target Duration")
       if target_Duration == "":
         messages.error(request, "Please enter the duration of your goal.")
-        return redirect('budget')
+        return redirect('budget-set-up')
 
       if not isfloat(value):
         messages.error(request, "Please fill in your goal value in decimal number only.")
         return redirect('budget-set-up')
 
+      if not priority.isdigit():
+          messages.error(request, "Please fill in your priority in integer only.")
+          return redirect('budget-set-up')
+
       if target_Duration.isdigit() == False:
         messages.error(request, "Please enter in the target duration in integer only.")
-        return redirect('budget')
+        return redirect('budget-set-up')
 
       get_user.leftOver = float(get_user.net_worth) - float(get_user.dividends) - float(get_user.interest) - float(get_user.food) - float(get_user.housing) - float(get_user.transportation) - float(get_user.utilities)- float(get_user.insurance) - float(get_user.medical) - float(get_user.personal)- float(get_user.recreational) - float(get_user.miscellaneous)
 
@@ -1158,6 +1162,10 @@ def budget_lookup_view(request, id):
         if not isfloat(value):
           messages.error(request, "Please fill in your goal value in decimal number only.")
           return redirect('detailed_budget',id=id)
+
+        if not priority.isdigit():
+            messages.error(request, "Please fill in your priority in integer only.")
+            return redirect('detailed_budget',id=id)
 
         if not target_Duration.isdigit():
           messages.error(request, "Please fill in your target duration in whole number only.")
@@ -1983,6 +1991,10 @@ def set_goals(request):
               messages.error(request, "Please enter in the target duration in integer only.")
               return redirect('budget')
 
+            if not priority.isdigit():
+              messages.error(request, "Please fill in your priority in integer only.")
+              return redirect('budget')
+
             if not isfloat(value):
               messages.error(request, "Please fill in your goal value in decimal number only.")
               return redirect('budget')
@@ -2026,7 +2038,7 @@ def getDataByPrice(request):
   highestGoal = 0
   highestInstance = None
   for instance in b:
-    highestGoal = max(instance.priority, highestGoal)
+    highestGoal = max(int(instance.priority), highestGoal)
     highestInstance = instance
     print(instance)
   
