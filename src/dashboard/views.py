@@ -2023,19 +2023,21 @@ def set_goals(request):
 def getDataByPrice(request):
   b = Budget.objects.filter(username=request.user)
   u = User.objects.get(username=request.user).net_worth
-  maxValue = 0
+  highestGoal = 0
+  highestInstance = None
   for instance in b:
-    maxValue = max(u - instance.per_month/30, maxValue)
-    print(instance.per_month)
+    highestGoal = max(instance.priority, highestGoal)
+    highestInstance = instance
+    print(instance)
   
-  print(maxValue)
+  print(highestGoal)
   imported = dataGovAPI()
   datasetid, size = imported.getDatasetID(0)
   dataset = imported.getDataset(datasetid,size)['result']['records']
   # print(dataset['result']['records'][1]['value'])
   updatedDB = []
   for data in dataset:
-    if (data['value'] != 'na') and float(data['value']) <= maxValue:
+    if (data['value'] != 'na') and float(data['value']) <= highestInstance.per_month/30:
       updatedDB.append(data)
   print(updatedDB)
   return updatedDB
