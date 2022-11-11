@@ -581,7 +581,7 @@ def budget_setup_view(request, *args, **kwargs):
         messages.error(request, "Please enter in the target duration in integer only.")
         return redirect('budget-set-up')
 
-      get_user.leftOver = float(get_user.net_worth) - float(get_user.dividends) - float(get_user.interest) - float(get_user.food) - float(get_user.housing) - float(get_user.transportation) - float(get_user.utilities)- float(get_user.insurance) - float(get_user.medical) - float(get_user.personal)- float(get_user.recreational) - float(get_user.miscellaneous)
+      get_user.leftOver = float(get_user.net_worth) 
 
       get_user.goalPrice = float(value)/float(target_Duration)
 
@@ -1963,8 +1963,10 @@ def set_goals(request):
     if avgMiscellaneous != 0:
       new_setAside = SetAside.objects.create(username=username, category="Miscellaneous",amount=avgMiscellaneous)
       new_setAside.save()
+    itemsWithinBudget = None
+    if(Budget.objects.filter(username=request.user)):
+      itemsWithinBudget = getDataByPrice(request)
     
-    itemsWithinBudget = getDataByPrice(request)
 
     if request.method == "POST":
         get_user = User.objects.get(username=request.user)
@@ -2000,10 +2002,6 @@ def set_goals(request):
               return redirect('budget')
 
             get_user.leftOver = float(get_user.net_worth) 
-            - float(get_user.dividends) - float(get_user.interest) - float(get_user.food) 
-            - float(get_user.housing) - float(get_user.transportation) - float(get_user.utilities)
-            - float(get_user.insurance) - float(get_user.medical) - float(get_user.personal)
-            - float(get_user.recreational) - float(get_user.miscellaneous)
 
             get_user.goalPrice = float(value)/float(target_Duration)
 
