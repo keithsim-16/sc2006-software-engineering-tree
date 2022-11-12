@@ -5,7 +5,7 @@ Tree Financial Tracker is a web-based financial tracking application, targeted a
 
 ## For more details:
 - Refer to `SC2006 Final Deliverables.pdf` Report
-- Project Demo Video: `(__link__)`
+- Project Demo Video: https://www.youtube.com/watch?v=bYdTVEpUDls
 
 ## How To Use
 - Clone repository
